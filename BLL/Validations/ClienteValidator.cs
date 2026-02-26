@@ -9,7 +9,7 @@ using DomainLayer.Models;
 
 namespace BLL.Validations
 {
-    internal class ClienteValidator : AbstractValidator<Cliente>
+    public class ClienteValidator : AbstractValidator<Cliente>
     {
         public ClienteValidator() 
         {

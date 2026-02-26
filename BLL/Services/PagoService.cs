@@ -1,4 +1,5 @@
-﻿using DAL.Repositorios.Interfaces;
+﻿using BLL.Services.Interfaces;
+using DAL.Repositorios.Interfaces;
 using DomainLayer.Models;
 using FluentValidation;
 using System;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace BLL.Services
 {
-    public class PagoService(IPagoRepository pagoRepository, IValidator<Pago> validator) : GenericService<Pago>(pagoRepository, validator)
+    public class PagoService(IPagoRepository pagoRepository, IValidator<Pago> validator) : GenericService<Pago>(pagoRepository, validator), IPagoService
     {
     }
 }

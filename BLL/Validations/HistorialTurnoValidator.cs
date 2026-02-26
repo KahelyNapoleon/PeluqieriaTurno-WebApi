@@ -9,7 +9,7 @@ using FluentValidation;
 
 namespace BLL.Validations
 {
-    internal class HistorialTurnoValidator : AbstractValidator<HistorialTurno>
+    public class HistorialTurnoValidator : AbstractValidator<HistorialTurno>
     {
         public HistorialTurnoValidator()
         {

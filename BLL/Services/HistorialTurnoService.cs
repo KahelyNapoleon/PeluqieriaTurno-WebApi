@@ -1,4 +1,5 @@
-﻿using DAL.Repositorios.Interfaces;
+﻿using BLL.Services.Interfaces;
+using DAL.Repositorios.Interfaces;
 using DomainLayer.Models;
 using FluentValidation;
 using System;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace BLL.Services
 {
-    public class HistorialTurnoService(IHistorialTurnoRepository historialTurnoRepository, IValidator<HistorialTurno> validator) : GenericService<HistorialTurno>(historialTurnoRepository, validator)
+    public class HistorialTurnoService(IHistorialTurnoRepository historialTurnoRepository, IValidator<HistorialTurno> validator) : GenericService<HistorialTurno>(historialTurnoRepository, validator), IHistorialTurnoService
     {
     }
 }

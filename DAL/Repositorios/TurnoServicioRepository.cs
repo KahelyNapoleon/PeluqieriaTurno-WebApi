@@ -1,4 +1,5 @@
 ﻿using DAL.Data;
+using DAL.Repositorios.Interfaces;
 using DomainLayer.Models;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace DAL.Repositorios
 {
-    public class TurnoServicioRepository(ApplicationDbContext dbContext) : GenericRepository<TurnoServicio>(dbContext)
+    public class TurnoServicioRepository(ApplicationDbContext dbContext) : GenericRepository<TurnoServicio>(dbContext), ITurnoServicioRepository
     {
     }
 }

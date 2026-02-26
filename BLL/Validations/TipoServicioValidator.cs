@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BLL.Validations
 {
-    internal class TipoServicioValidator : AbstractValidator<TipoServicio>
+    public class TipoServicioValidator : AbstractValidator<TipoServicio>
     {
         public TipoServicioValidator()
         {

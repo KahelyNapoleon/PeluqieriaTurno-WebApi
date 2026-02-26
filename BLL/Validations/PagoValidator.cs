@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BLL.Validations
 {
-    internal class PagoValidator : AbstractValidator<Pago>
+    public class PagoValidator : AbstractValidator<Pago>
     {
         public PagoValidator()
         {

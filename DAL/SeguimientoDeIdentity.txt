@@ -12,7 +12,7 @@
 
 6-Agregar el servicio "AddAuthentication" que utilizara la autenticacion por medio de JWT.[HECHO]
 
-6-a-Detalle: las propeidades de configuracion para JwtConfig estan extendidas en appsettings.json,
+6-a-Detalle: las propiedades de configuracion para JwtConfig estan extendidas en appsettings.json,
 solo casos de prueba, NO APLICAR ESTOS CAMBIOS A PRODUCCION.[ATENCION-PROXIMO A CORREGIR]
 
 7-Falta generar la primera migracion con el objetivo de crear 

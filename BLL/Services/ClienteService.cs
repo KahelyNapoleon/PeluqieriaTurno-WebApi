@@ -10,7 +10,8 @@ using System.Threading.Tasks;
 
 namespace BLL.Services
 {
-    public class ClienteService(IClienteRepository clienteRepository, IValidator<Cliente> validator) : GenericService<Cliente>(clienteRepository, validator)
+    public class ClienteService
+        (IClienteRepository clienteRepository, IValidator<Cliente> validator) : GenericService<Cliente>(clienteRepository, validator), IClienteService
     {
     }
 }

@@ -9,7 +9,7 @@ using FluentValidation;
 
 namespace BLL.Validations
 {
-    internal class EstadoTurnoValidator : AbstractValidator<EstadoTurno>
+    public class EstadoTurnoValidator : AbstractValidator<EstadoTurno>
     {
         public EstadoTurnoValidator()
         {

@@ -1,4 +1,5 @@
 ﻿using DAL.Data;
+using DAL.Repositorios.Interfaces;
 using DomainLayer.Models;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace DAL.Repositorios
 {
-    public class PagoRepository(ApplicationDbContext dbContext) : GenericRepository<Pago>(dbContext)
+    public class PagoRepository(ApplicationDbContext dbContext) : GenericRepository<Pago>(dbContext), IPagoRepository
     {
     }
 }

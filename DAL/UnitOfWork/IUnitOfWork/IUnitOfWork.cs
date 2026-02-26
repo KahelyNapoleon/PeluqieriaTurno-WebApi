@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PracticaDelegado.Interfaces
+namespace DAL.UnitOfWork.IUnitOfWork
 {
-    internal interface IMostrarDatosCliente
+    public interface IUnitOfWork
     {
-        string GetDatos(string d1, string d2);
     }
 }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BLL.Validations
 {
-    internal class TurnoValidator : AbstractValidator<Turno>
+    public class TurnoValidator : AbstractValidator<Turno>
     {
         public TurnoValidator()
         {
