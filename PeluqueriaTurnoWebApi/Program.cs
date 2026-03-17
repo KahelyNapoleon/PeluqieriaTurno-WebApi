@@ -12,6 +12,7 @@ using DAL.Repositorios.Interfaces;
 using DAL.Repositorios;
 using BLL.Services.Interfaces;
 using BLL.Services;
+using PeluqueriaTurnoWebApi.ContainerGroupRegistration;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,38 +39,15 @@ builder.Services.AddSwaggerGen();
 //SERILOG
 
 //FLUENTVALIDATION INYECTIONS
-builder.Services.AddScoped<IValidator<Cliente>, ClienteValidator>();
-builder.Services.AddScoped<IValidator<EstadoTurno>,EstadoTurnoValidator>();
-builder.Services.AddScoped<IValidator<HistorialTurno>,HistorialTurnoValidator>();
-builder.Services.AddScoped<IValidator<MetodoPago>,MetodoPagoValidator>();
-builder.Services.AddScoped<IValidator<Pago>,PagoValidator>();
-builder.Services.AddScoped<IValidator<Servicio>,ServicioValidator>();
-builder.Services.AddScoped<IValidator<TipoServicio>,TipoServicioValidator>();
-builder.Services.AddScoped<IValidator<TurnoServicio>,TurnoServicioValidator>();
-builder.Services.AddScoped<IValidator<Turno>, TurnoValidator>();
+builder.Services.AddValidation();
 
 //REPOSITORIES Services
-builder.Services.AddScoped<IClienteRepository, ClienteRepository>();
-builder.Services.AddScoped<IEstadoTurnoRepository,EstadoTurnoRepository>();
-builder.Services.AddScoped<IHistorialTurnoRepository,HistorialTurnoRepository>();
-builder.Services.AddScoped<IMetodoPagoRepository,MetodoPagoRepository>();
-builder.Services.AddScoped<IPagoRepository,PagoRepository>();
-builder.Services.AddScoped<IServicioRepository,ServicioRepository>();
-builder.Services.AddScoped<ITipoServicioRepository,TipoServicioRepository>();
-builder.Services.AddScoped<ITurnoRepository,TurnoRepository>();
-builder.Services.AddScoped<ITurnoServicioRepository,TurnoServicioRepository>();
+builder.Services.AddRepositoriesOfDAL();
 
 //SERVICES INYECTIONS 
-builder.Services.AddScoped<IClienteService,ClienteService>();
-builder.Services.AddScoped<IEstadoTurnoService, EstadoTurnoService>();
-builder.Services.AddScoped<IHistorialTurnoService, HistorialTurnoService>();
-builder.Services.AddScoped<IMetodoPagoService, MetodoPagoService>();
-builder.Services.AddScoped<IPagoService, PagoService>();
-builder.Services.AddScoped<IServicioService, ServicioService>();
-builder.Services.AddScoped<ITipoServicioService, TipoServicioService>();
-builder.Services.AddScoped<ITurnoService, TurnoService>();
-builder.Services.AddScoped<ITurnoServicioService, TurnoServicioService>();
+builder.Services.AddServicesOfBLL();
 
+//Authentication Manner - JWTBearer
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
