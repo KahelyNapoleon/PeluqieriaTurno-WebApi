@@ -9,11 +9,23 @@ dotnet ef database update --startup-project ..\PeluqueriaTurnoWebApi
  detalles a tener en cuenta.
 
 [RAMA-IDENTITY-AND-SECURITY]
-1-JwtConfig-> ESTA COONFIGURACION DEBE SER GUARDADA EN AZURE KEY-VAULT para mayor seguridad.
+1-JwtConfig-> ESTA COONFIGURACION DEBE SER GUARDADA EN AZURE KEY-VAULT para mayor seguridad. -CORREGIDO(Se guardo con dotnet user-secrets)
 2-DETALLE: Se ah elminado la base de datos y generado una nueva actualizacion de la base de datos
 por medio de EFCore ->  dotnet ef database update --project DAL --startup-project PeluqueriaTurnoWebApi
 Build started... por un error conceptual en el que se elimino el cuerpo de los metodos up, lo que 
 dejo a la actualizacion sin poder crear ninguna tabla de aspnetUser.
+
+[CONTROLADORES]
+1-Se comenzo con el primer controlador Clientes -> lo cual hubo algunos detalles importantes que corregir.
+A-Correccion en la descripcion de los endpoints.
+B-Declaracion de ActionResult<T> para un tipo de dato fuertemente tipado de retorno del controlador.
+C-Ver el detalle de como implementar HttpPatch a diferencia de HttpPut, habia algo de Json por ahi (JsonPatchDocument en el tipo del parametro del metodo)
+D-Correccion en los metodos de Estado Http (NotFound, BadRequest)
+E-Se corrigio un error de implementacion en el metodo Update del servicioGenerico, al usar
+await _repository.Update(id ,TEntity); se ah colocado mal el segundo parametro de valor, ya que es el que reemplaza
+las propeidades de la entidad por las nuevas (entidad original se recupera por id y Tentity reemplaza los valores actualizados)
+
+
 
 [TAREAS PENDIENTES]
 1-CREAR ENDPOINTS BASICOS DE IDENTITY

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PeluqueriaTurnoWebApi.DTOs.ClienteDTOs
 {
-    internal class ClienteCreateDTO
+    public class ClienteCreateDTO
     {
         public string Nombre { get; set; } = null!;
 

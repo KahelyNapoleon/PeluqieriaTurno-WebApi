@@ -8,8 +8,8 @@ namespace BLL.Result
 {
     public class Result<T> 
     {
-        private bool IsValid { get; set; } = true;
-        private List<string>? Errors { get; set; } = new List<string>();
+        public bool IsValid { get; set; } = true;
+        public List<string>? Errors { get; set; } = new List<string>();
         public T? Data { get; set; } 
 
         public Result() { }

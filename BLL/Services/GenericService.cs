@@ -84,8 +84,8 @@ namespace BLL.Services
                 return Result<T>.Fail(validationResult.Errors.ToString()!);
             }
 
-            //ejecuta el metodo de repositorio 'Update' con el Id y tipo validados.
-            await _repository.Update(id ,entityExiste);
+            //el id para que el repo busque la entidad y a partir de ahi reemplace con TEntity.
+            await _repository.Update(id ,TEntity);
 
             return Result<T>.Succes(entityExiste);        
         }
