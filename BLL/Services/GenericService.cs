@@ -39,7 +39,7 @@ namespace BLL.Services
             var TEntity = await _repository.GetById(id);
             if (TEntity == null)
             {
-                return Result<string>.Fail($"El id {id} no se encuentra en los registros");
+                return Result<string>.Fail($"El id {id} no existe.");
             }
             await _repository.Remove(TEntity);
 

@@ -1,7 +1,7 @@
 ﻿using BLL.Services;
 using BLL.Services.Interfaces;
 
-namespace PeluqueriaTurnoWebApi.ContainerGroupRegistration
+namespace PeluqueriaTurnoWebApi.Configuration.ContainerGroupRegistration
 {
     public static class CollectionBLLServices
     {

@@ -21,7 +21,7 @@ public partial class Cliente
 
     public string? Observaciones { get; set; }
 
-    public bool Activo { get; set; }
+    public bool Activo { get; set; } = true;
 
     public virtual ICollection<Turno> Turnos { get; set; } = new List<Turno>();
 }

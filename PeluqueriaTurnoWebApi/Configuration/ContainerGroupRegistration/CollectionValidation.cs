@@ -2,7 +2,7 @@
 using DomainLayer.Models;
 using FluentValidation;
 
-namespace PeluqueriaTurnoWebApi.ContainerGroupRegistration
+namespace PeluqueriaTurnoWebApi.Configuration.ContainerGroupRegistration
 {
     public static class CollectionValidation
     {

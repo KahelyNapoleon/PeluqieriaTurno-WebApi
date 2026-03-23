@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PeluqueriaTurnoWebApi.DTOs.EstadoTurnoDTOs
 {
-    internal class EstadoTurnoCreateUpdateDTO
+    public class EstadoTurnoCreateUpdateDTO
     {
         public string Descripcion { get; set; } = null!;
     }

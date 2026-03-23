@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PeluqueriaTurnoWebApi.DTOs.HistorialTurnoDTOs
 {
-    internal class HistorialTurnoUpdateDTO
+    public class HistorialTurnoCreateUpdateDTO
     {
         public DateTimeOffset? FechaHoraAnterior { get; set; }
 

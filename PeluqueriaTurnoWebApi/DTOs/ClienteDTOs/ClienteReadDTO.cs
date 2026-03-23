@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PeluqueriaTurnoWebApi.DTOs.ClienteDTOs
+﻿namespace PeluqueriaTurnoWebApi.DTOs.ClienteDTOs
 {
-    public class ClienteCreateDTO
+    public class ClienteReadDTO
     {
+        public int ClienteId { get; set; }
+
         public string Nombre { get; set; } = null!;
 
         public string Apellido { get; set; } = null!;
@@ -21,6 +17,7 @@ namespace PeluqueriaTurnoWebApi.DTOs.ClienteDTOs
         public string? Preferencias { get; set; }
 
         public string? Observaciones { get; set; }
+
         public bool Activo { get; set; } = true;
     }
 }

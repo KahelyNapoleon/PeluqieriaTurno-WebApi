@@ -12,7 +12,7 @@ using DAL.Repositorios.Interfaces;
 using DAL.Repositorios;
 using BLL.Services.Interfaces;
 using BLL.Services;
-using PeluqueriaTurnoWebApi.ContainerGroupRegistration;
+using PeluqueriaTurnoWebApi.Configuration.ContainerGroupRegistration;
 
 
 var builder = WebApplication.CreateBuilder(args);

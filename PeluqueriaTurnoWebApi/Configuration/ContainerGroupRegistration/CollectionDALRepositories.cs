@@ -1,7 +1,7 @@
 ﻿using DAL.Repositorios;
 using DAL.Repositorios.Interfaces;
 
-namespace PeluqueriaTurnoWebApi.ContainerGroupRegistration
+namespace PeluqueriaTurnoWebApi.Configuration.ContainerGroupRegistration
 {
     public static class CollectionDALRepositories
     {

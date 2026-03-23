@@ -4,6 +4,7 @@ using DomainLayer.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using PeluqueriaTurnoWebApi.DTOs.ClienteDTOs;
+using PeluqueriaTurnoWebApi.Mappings;
 
 namespace PeluqueriaTurnoWebApi.Controllers
 {
@@ -19,18 +20,22 @@ namespace PeluqueriaTurnoWebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Cliente>>> GetClientes()
+        public async Task<ActionResult<IEnumerable<ClienteReadDTO>>> GetClientes()
         {
             var clientes = await _clienteService.GetAll();
             if (!clientes.IsValid)
             {
                 return NotFound(clientes.Errors);
             }
-            return Ok(clientes.Data);
+
+            //Convierto las lista de Cliente a ClienteDTO.
+            var clienteDtoToList = clientes.Data!.Select(c => c.ToReadDTO()); 
+
+            return Ok(clienteDtoToList);
         }
 
-        [HttpGet("/cliente/{id:int}")]
-        public async Task<ActionResult<Cliente>> GetCliente([FromRoute] int id)
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<ClienteReadDTO>> GetCliente([FromRoute] int id)
         {
             var cliente = await _clienteService.GetById(id);
             if(!cliente.IsValid)
@@ -38,45 +43,35 @@ namespace PeluqueriaTurnoWebApi.Controllers
                 return BadRequest(cliente.Errors);
             }
 
-            return Ok(cliente.Data);
+            var clienteDto = cliente.Data!.ToReadDTO();
+
+            return Ok(clienteDto);
         }
 
         [HttpPost]
-        public async Task<ActionResult<Cliente>> AddCliente([FromBody] Cliente cliente)
+        public async Task<ActionResult<ClienteCreateDTO>> AddCliente([FromBody] ClienteCreateDTO cliente)
         {
-            var agregarCliente = await _clienteService.Add(cliente);
+            var clienteToEntity = cliente.ToEntity();
+            var agregarCliente = await _clienteService.Add(clienteToEntity);
             if (!agregarCliente.IsValid)
             {
                 return BadRequest(agregarCliente.Errors);
             }
-
             return CreatedAtAction(nameof(GetCliente), new { id = agregarCliente.Data!.ClienteId }, agregarCliente.Data);
         }
 
         [HttpPut("{id:int}")]
         public async Task<ActionResult> UpdateCliente([FromBody] ClienteUpdateDTO cliente, [FromRoute]int id)
         {
-            var clienteUpdate = new Cliente
-            {
-                ClienteId = id,
-                Nombre = cliente.Nombre,
-                Apellido = cliente.Apellido,
-                NroCelular = cliente.NroCelular,
-                CorreoElectronico = cliente.CorreoElectronico,
-                FechaNacimiento = cliente.FechaNacimiento,
-                Preferencias = cliente.Preferencias,
-                Observaciones = cliente.Observaciones,
-                Activo = cliente.Activo
-            };
+            var clienteEntity = new Cliente();
+            cliente.UpdateCliente(clienteEntity);
 
-            var actualzarCliente = await _clienteService.Update(id,clienteUpdate);
-            if (!actualzarCliente.IsValid)
+            var actualizarCliente = await _clienteService.Update(id,clienteEntity);
+            if (!actualizarCliente.IsValid)
             {
-                return BadRequest(actualzarCliente.Errors);
+                return BadRequest(actualizarCliente.Errors);
             }
-
             return NoContent();
-
         }
 
         [HttpDelete("{id:int}")]
