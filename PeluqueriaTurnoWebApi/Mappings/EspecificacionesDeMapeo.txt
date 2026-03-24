@@ -1,0 +1,7 @@
+﻿No saltear:
+-En cada Clase de mapeo recordar bien que puede haber mas de un solo tipo de DTO para cada Entidad.
+
+
+Metodos de Extension para el mapeo de las clases que Faltan:
+-Turno
+-TurnoServicio

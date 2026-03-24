@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PeluqueriaTurnoWebApi.DTOs.PagoDTOs
 {
-    internal class PagoUpdateDTO
+    public class PagoUpdateDTO
     {
         public int MetodoPagoId { get; set; }
 

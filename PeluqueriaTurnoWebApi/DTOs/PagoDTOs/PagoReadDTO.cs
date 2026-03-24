@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PeluqueriaTurnoWebApi.DTOs.PagoDTOs
+﻿namespace PeluqueriaTurnoWebApi.DTOs.PagoDTOs
 {
-    public class PagoCreateDTO
+    public class PagoReadDTO
     {
+        public int PagoId { get; set; }
+
         public int TurnoId { get; set; }
 
         public int MetodoPagoId { get; set; }
