@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PeluqueriaTurnoWebApi.DTOs.TurnoServicioDTOs
 {
-    internal class TurnoServicioUpdateDTO
+    public class TurnoServicioUpdateDTO
     {
         public int ServicioId { get; set; }
 

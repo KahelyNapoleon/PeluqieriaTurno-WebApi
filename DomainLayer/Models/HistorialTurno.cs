@@ -5,6 +5,7 @@ namespace DomainLayer.Models;
 
 public partial class HistorialTurno
 {
+    
     public int HistorialTurnoId { get; set; }
 
     public int TurnoId { get; set; }
@@ -13,7 +14,7 @@ public partial class HistorialTurno
 
     public DateTimeOffset FechaHoraActual { get; set; }
 
-    public int EstadoTurnoAnterior { get; set; }
+    public int EstadoTurnoAnterior { get; set; } = default(int);
 
     public int EstadoTurnoActual { get; set; }
 
