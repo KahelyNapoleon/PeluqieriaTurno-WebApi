@@ -1,9 +1,11 @@
 ﻿using DAL.Data;
 using DAL.Repositorios.Interfaces;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -22,27 +24,69 @@ namespace DAL.Repositorios
 
         public async Task Add(T TEntity)
         {
-            _dbContext.Entry(TEntity).State = EntityState.Added;
-           // await _dbSet.AddAsync(TEntity);
-            await SaveChangesAsync();
+            try
+            {
+                _dbContext.Entry(TEntity).State = EntityState.Added;
+                // await _dbSet.AddAsync(TEntity);
+                await SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                var error = $"Error en agregar una entidad de {nameof(T)}";
+                var exceptionMessage = ex.InnerException!.Message;
+                throw new DbUpdateConcurrencyException(exceptionMessage + error);
+            }
+            catch (DbUpdateException ex)
+            {
+                var message = ex.InnerException!.Message;
+                throw new DbUpdateException(message);
+            }
+
+           
         }
 
         public async Task<IEnumerable<T>> GetAll()
         {
-            var entities = await _dbSet.ToListAsync();
-            return entities;
+            try
+            {
+                var entities = await _dbSet.ToListAsync();
+                return entities;
+            }
+            catch (Exception ex)
+            {
+                var message = ex.InnerException!.Message;
+                throw new InvalidOperationException(message);
+            }
         }
 
         public async Task<T> GetById(int id)
         {
-            var entity = await _dbSet.FindAsync(id);
-            return entity!;
+            try
+            {
+                var entity = await _dbSet.FindAsync(id);
+                return entity!;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException(ex.InnerException!.Message);
+            }
         }
 
         public async Task Remove(T TEntity)
         {
-            _dbContext.Entry(TEntity).State = EntityState.Deleted;
-            await SaveChangesAsync();
+            try
+            {
+                _dbContext.Entry(TEntity).State = EntityState.Deleted;
+                await SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                throw new DbUpdateConcurrencyException(ex.InnerException!.Message);
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new DbUpdateException(ex.InnerException!.Message);
+            }
         }
 
         /// <summary>
@@ -54,12 +98,23 @@ namespace DAL.Repositorios
         /// <returns>No retorna nada, realiza tal cambio en la base de datos</returns>
         public async Task Update(int id, T TEntity)
         {
-            var entity = await _dbSet.FindAsync(id);
+            try
+            {
+                var entity = await _dbSet.FindAsync(id);
             //Y que sucede si TEntity no es del mism otipo que entity?
             //EFCore resuelve esto, actualiza las propiedades, del modelo de entidad, de nombre
             //que coinciden con las del objeto de tipo DTO
             _dbContext.Entry(entity!).CurrentValues.SetValues(TEntity);
-            await SaveChangesAsync();
+                await SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                throw new DbUpdateConcurrencyException(ex.InnerException!.Message);
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new DbUpdateException(ex.InnerException!.Message);
+            }
         }
 
         public async Task SaveChangesAsync()
