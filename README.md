@@ -1,10 +1,10 @@
 # PeluqueriaTurno-WebApi
 
-1) API REST - Sistema de Gestión de Turnos:
+1)API REST - Sistema de Gestión de Turnos:
 API backend desarrollada en .NET para la gestión de turnos, clientes y servicios. 
 Incluye autenticación y autorización mediante JWT Bearer y ASP.NET Core Identity.
 
-2) Tecnologías utilizadas:
+2)Tecnologías utilizadas:
 -.NET / ASP.NET Core
 -C#
 -Entity Framework Core
@@ -15,7 +15,7 @@ Incluye autenticación y autorización mediante JWT Bearer y ASP.NET Core Identi
 -Git / GitHub
 -Postman
 
-3) Funcionalidades:
+3)Funcionalidades:
 -CRUD completo de turnos, clientes y servicios
 -Autenticación con JWT (login y generación de token)
 -Autorización basada en roles (aun por implementar)
