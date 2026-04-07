@@ -22,7 +22,7 @@ namespace DAL.Repositorios
             _dbContext = dbContext;
         }
 
-        public async Task Add(T TEntity)
+        public virtual async Task Add(T TEntity)
         {
             try
             {
@@ -32,47 +32,47 @@ namespace DAL.Repositorios
             }
             catch (DbUpdateConcurrencyException ex)
             {
-                var error = $"Error en agregar una entidad de {nameof(T)}";
+                var error = $"The entity {nameof(T)} could not be saved in the database.";
                 var exceptionMessage = ex.InnerException!.Message;
                 throw new DbUpdateConcurrencyException(exceptionMessage + error);
             }
             catch (DbUpdateException ex)
             {
                 var message = ex.InnerException!.Message;
-                throw new DbUpdateException(message);
+                throw new Exception("Occurred a problem to access to database. " + message);
             }
 
            
         }
 
-        public async Task<IEnumerable<T>> GetAll()
+        public virtual async Task<IEnumerable<T?>> GetAll()
         {
             try
             {
                 var entities = await _dbSet.ToListAsync();
                 return entities;
             }
-            catch (Exception ex)
+            catch (DbUpdateException ex)
             {
                 var message = ex.InnerException!.Message;
-                throw new InvalidOperationException(message);
+                throw new Exception("Occurred a problem to access to database. "+message);
             }
         }
 
-        public async Task<T> GetById(int id)
+        public virtual async Task<T?> GetById(int id)
         {
             try
             {
                 var entity = await _dbSet.FindAsync(id);
                 return entity!;
             }
-            catch (Exception ex)
+            catch (DbUpdateException ex)
             {
-                throw new InvalidOperationException(ex.InnerException!.Message);
+                throw new Exception("Ocurred a problem to access to database" +ex.InnerException!.Message);
             }
         }
 
-        public async Task Remove(T TEntity)
+        public virtual async Task Remove(T TEntity)
         {
             try
             {
@@ -81,11 +81,11 @@ namespace DAL.Repositorios
             }
             catch (DbUpdateConcurrencyException ex)
             {
-                throw new DbUpdateConcurrencyException(ex.InnerException!.Message);
+                throw new Exception("The entity doesn't exist. " + ex.InnerException!.Message);
             }
             catch (DbUpdateException ex)
             {
-                throw new DbUpdateException(ex.InnerException!.Message);
+                throw new DbUpdateException("The entity can not be remove by restrictions." +ex.InnerException!.Message);
             }
         }
 
@@ -96,7 +96,7 @@ namespace DAL.Repositorios
         /// <param name="TEntity">De tipo DTO con las propiedades nuevas para actualizar
         /// el registro de entidad</param>
         /// <returns>No retorna nada, realiza tal cambio en la base de datos</returns>
-        public async Task Update(int id, T TEntity)
+        public virtual async Task Update(int id, T TEntity)
         {
             try
             {
@@ -109,11 +109,11 @@ namespace DAL.Repositorios
             }
             catch (DbUpdateConcurrencyException ex)
             {
-                throw new DbUpdateConcurrencyException(ex.InnerException!.Message);
+                throw new Exception("The entity doesn't exist or There was another process where modified" +ex.InnerException!.Message);
             }
             catch (DbUpdateException ex)
             {
-                throw new DbUpdateException(ex.InnerException!.Message);
+                throw new Exception("The entity can not be update by restrictions." +ex.InnerException!.Message);
             }
         }
 

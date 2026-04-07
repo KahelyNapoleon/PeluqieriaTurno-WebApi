@@ -25,11 +25,14 @@ E-Se corrigio un error de implementacion en el metodo Update del servicioGeneric
 await _repository.Update(id ,TEntity); se ah colocado mal el segundo parametro de valor, ya que es el que reemplaza
 las propeidades de la entidad por las nuevas (entidad original se recupera por id y Tentity reemplaza los valores actualizados)
 
+F-Metodo GetPaged de Turno servicio: Estado: Por implementar, Advetencias: controlar el flujo de transicion de 
+capa en capa, comenzando por el de TurnoRepository(VERIFICAR)->TurnoService(COMPLETAR)->TurnoController(VERIFICAR)
+                                                                  [turnoMapping](HECHO)
 
 
 [TAREAS PENDIENTES]
 1-CREAR ENDPOINTS BASICOS DE IDENTITY
-2-TENER EN CUENTA QUE EN LA CONFIGURACION DE JWTBearer LAS PROPEIDADES ESTAN EN APPSETTINGS->CAMBIARLAS A AZURE KEY-VAULT.
+2-TENER EN CUENTA QUE EN LA CONFIGURACION DE JWTBearer LAS PROPEIDADES ESTAN EN APPSETTINGS->CAMBIARLAS A AZURE KEY-VAULT.[COMPLETADO]
 3-PROTECCION DE ENDPOIINTS -> [Authorize]
 4-CREAR ROLES INICIALES
 5-RESUMEN: Autenticacion Real->Autorizacion->Emision de token->Proteccion de endpoints.
