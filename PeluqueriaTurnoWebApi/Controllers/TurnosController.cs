@@ -17,7 +17,7 @@ namespace PeluqueriaTurnoWebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<TurnoReadDTO>> GetPaged([FromQuery] int pageNumber, [FromQuery] int pageSize)
+        public async Task<ActionResult<TurnoReadDTO>> GetPaged([FromQuery] int pageNumber, [FromQuery] int pageSize = 10)
         {
             var turnos = await _turnoService.GetPaged(pageNumber, pageSize);
             if (!turnos.IsValid)
