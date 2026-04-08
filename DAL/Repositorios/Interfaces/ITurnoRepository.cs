@@ -9,5 +9,6 @@ namespace DAL.Repositorios.Interfaces
 {
     public interface ITurnoRepository : IGenericRepository<Turno>
     {
+        Task<IEnumerable<Turno?>> GetPaged(int pageNumber, int pageSize);
     }
 }

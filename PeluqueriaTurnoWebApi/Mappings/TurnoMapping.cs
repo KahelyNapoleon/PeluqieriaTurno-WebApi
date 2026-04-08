@@ -5,7 +5,7 @@ namespace PeluqueriaTurnoWebApi.Mappings
 {
     public static class TurnoMapping
     {
-        public static TurnoReadDTO ToDTO(Turno t)
+        public static TurnoReadDTO ToDTO(this Turno t)
         {
             return new TurnoReadDTO
             {

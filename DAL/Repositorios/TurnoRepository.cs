@@ -19,7 +19,7 @@ namespace DAL.Repositorios
             _dbContext = dbContext;
         }
 
-        public async Task<IEnumerable<Turno?>> GetPaged(int pageNumber, int pageSize = 10)
+        public async Task<IEnumerable<Turno?>> GetPaged(int pageNumber, int pageSize)
         {
 
             var query = _dbContext.Turnos
@@ -47,8 +47,6 @@ namespace DAL.Repositorios
                  .AsNoTracking()
                  .Include(t => t.Cliente)
                  .Include(t => t.EstadoTurno);
-                 
-
 
             return await query.FirstOrDefaultAsync(t => t.TurnoId == id);
         }

@@ -29,7 +29,7 @@ namespace PeluqueriaTurnoWebApi.Controllers
             }
 
             //Convierto las lista de Cliente a ClienteDTO.
-            var clienteDtoToList = clientes.Data!.Select(c => c.ToReadDTO()); 
+            var clienteDtoToList = clientes.Data!.Select(c => c!.ToReadDTO()); 
 
             return Ok(clienteDtoToList);
         }

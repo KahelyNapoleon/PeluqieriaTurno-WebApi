@@ -46,15 +46,15 @@ namespace BLL.Services
             return Result<string>.Succes("Registro eliminado");
         }
 
-        public virtual async Task<Result<IEnumerable<T>>> GetAll()
+        public virtual async Task<Result<IEnumerable<T?>>> GetAll()
         {
             var TEntities = await _repository.GetAll();
             if (!TEntities.Any())
             {
-                return Result<IEnumerable<T>>.Fail("Aun no hay registros.");
+                return Result<IEnumerable<T?>>.Fail("Aun no hay registros.");
             }
 
-            return Result<IEnumerable<T>>.Succes(TEntities);
+            return Result<IEnumerable<T?>>.Succes(TEntities);
         }
 
         public virtual async Task<Result<T>> GetById(int id)

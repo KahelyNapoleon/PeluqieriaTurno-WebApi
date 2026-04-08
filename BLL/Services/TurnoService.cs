@@ -27,15 +27,26 @@ namespace BLL.Services
             _validatorHistorialTurno = validatorHistorialTurno;
         }
 
-        public async Task<Result<IEnumerable<Turno>>> GetAll()
+        public async Task<Result<IEnumerable<Turno?>>> GetPaged(int pageNumber, int pageSize)
+        {
+            var result = await _unitOfWork.TurnoRepository.GetPaged(pageNumber, pageSize);
+            if (!result.Any())
+            {
+                return Result<IEnumerable<Turno?>>.Fail("Aun no hay registros de turnos.");
+            }
+
+            return Result<IEnumerable<Turno?>>.Succes(result);
+        }
+
+        public async Task<Result<IEnumerable<Turno?>>> GetAll()
         {
             var turnos = await _unitOfWork.TurnoRepository.GetAll();
             if (!turnos.Any())
             {
-                return Result<IEnumerable<Turno>>.Fail("Error, aun no hay registros de Turnos");
+                return Result<IEnumerable<Turno?>>.Fail("Error, aun no hay registros de Turnos");
             }
 
-            return Result<IEnumerable<Turno>>.Succes(turnos);
+            return Result<IEnumerable<Turno?>>.Succes(turnos);
         }
 
         public async Task<Result<Turno>> GetById(int id)
@@ -63,11 +74,14 @@ namespace BLL.Services
             await _unitOfWork.TurnoRepository.Add(turno);
             await _unitOfWork.SaveChangeAsync();
 
+            int estadoTurnoDisponible = 0;
             //inicia el historial
             var inicioHistorialTurno = new HistorialTurno
             {
                 TurnoId = turno.TurnoId,
-                FechaHoraActual = new DateTimeOffset(turno.FechaTurno,turno.HoraTurno, TimeSpan.FromHours(-3)),
+                FechaHoraAnterior = null,
+                FechaHoraActual = new DateTimeOffset(turno.FechaTurno, turno.HoraTurno, TimeSpan.FromHours(-3)),
+                EstadoTurnoAnterior = estadoTurnoDisponible,
                 EstadoTurnoActual = turno.EstadoTurnoId,
             };
 
@@ -93,6 +107,10 @@ namespace BLL.Services
 
             //Recuperar los datos del turno antes de actualizar.
             var turnoAnterior = await _unitOfWork.TurnoRepository.GetById(id);
+            if (turnoAnterior == null)
+            {
+                return Result<Turno>.Fail($"No existe registro con id {id}");
+            }
 
             var validarTurno = await _validatorTurno.ValidateAsync(turno);
             if (!validarTurno.IsValid)
@@ -100,7 +118,6 @@ namespace BLL.Services
                 return Result<Turno>.Fail($"Error de validacion, {validarTurno.Errors}");
             }
 
-         
             //Actualizar Turno
             await _unitOfWork.TurnoRepository.Update(id, turno);
             await _unitOfWork.SaveChangeAsync();
@@ -113,6 +130,7 @@ namespace BLL.Services
             var fechaHoraActual = new DateTimeOffset(turno.FechaTurno, turno.HoraTurno, new TimeSpan(-3));
             var estadoTurnoAnterior = turnoAnterior.EstadoTurnoId;
             var estadoTurnoActual = turno.EstadoTurnoId;
+
             var historialTurno = new HistorialTurno
             {
                 TurnoId = turno.TurnoId,

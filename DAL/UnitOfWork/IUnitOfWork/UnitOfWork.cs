@@ -14,7 +14,7 @@ namespace DAL.UnitOfWork.IUnitOfWork
     {
         private  IDbContextTransaction _transaction = null!;
         private readonly ApplicationDbContext _dbContext;
-        private bool disposedValue;
+        //private bool disposedValue;
 
         public UnitOfWork(ApplicationDbContext dbContext)
         {
