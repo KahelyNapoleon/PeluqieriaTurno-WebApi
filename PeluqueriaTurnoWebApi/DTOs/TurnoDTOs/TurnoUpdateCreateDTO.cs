@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 
 namespace PeluqueriaTurnoWebApi.DTOs.TurnoDTOs
 {
-    internal class TurnoUpdateDTO
+    public class TurnoUpdateCreateDTO
     {
         public string? Detalle { get; set; }//EL DETALLE PUEDE CAMBIAR SI EL CLIENTE CAMBIA O QUITA UN SERVICIO.
 
+        public int ClienteId { get; set; } // Se debe dejar este campo para actualizar, en caso de que el cliente
+                                           //de baja el turno y el msimo quede libre
         public int EstadoTurnoId { get; set; } //SI SE ACTUALIZA AL CONFIRMAR
                                                //RECORDAR ESTAOD: LIBRE>CONFIRMAR>OCUPADO>EN PROCESO>FINALIZADO
         public TimeOnly HoraTurno { get; set; }

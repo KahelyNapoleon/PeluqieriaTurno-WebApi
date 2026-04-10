@@ -6,7 +6,7 @@ using PeluqueriaTurnoWebApi.Mappings;
 namespace PeluqueriaTurnoWebApi.Controllers
 {
     [ApiController]
-    [Route("api/{controller}")]
+    [Route("api/[controller]")]
     public class ServiciosController : ControllerBase
     {
         private readonly IServicioService _servicioService;
@@ -25,7 +25,7 @@ namespace PeluqueriaTurnoWebApi.Controllers
                 return BadRequest(servicios.Errors);
             }
 
-            var serviciosDto = servicios.Data!.Select(s => s.ToReadDto());
+            var serviciosDto = servicios.Data!.Select(s => s!.ToReadDto());
             return Ok(serviciosDto);
 
         }
@@ -44,7 +44,7 @@ namespace PeluqueriaTurnoWebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateServicio([FromBody] ServicioCreateUpdateDTO servicioDto)
+        public async Task<ActionResult<ServicioReadDTO>> CreateServicio([FromBody] ServicioCreateUpdateDTO servicioDto)
         {
             var servicioEntity = servicioDto.ToEntity();
             var createServicio = await _servicioService.Add(servicioEntity);

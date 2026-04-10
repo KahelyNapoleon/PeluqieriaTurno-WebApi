@@ -26,7 +26,7 @@ namespace PeluqueriaTurnoWebApi.Controllers
                 return BadRequest(historialTurnos.Data);
             }
 
-            var historialTurnosDto = historialTurnos.Data!.Select(h => h.ToDto());
+            var historialTurnosDto = historialTurnos.Data!.Select(h => h!.ToDto());
 
             return Ok(historialTurnosDto);
         }

@@ -7,7 +7,7 @@ using PeluqueriaTurnoWebApi.Mappings;
 namespace PeluqueriaTurnoWebApi.Controllers
 {
     [ApiController]
-    [Route("api/{controller}")]
+    [Route("api/[controller]")]
     public class PagosController : ControllerBase
     {
         private readonly IPagoService _pagoService;
@@ -26,7 +26,7 @@ namespace PeluqueriaTurnoWebApi.Controllers
                 return BadRequest(pagos.Errors);
             }
 
-            var pagosDto = pagos.Data!.Select(p => p.ToReadDTO());
+            var pagosDto = pagos.Data!.Select(p => p!.ToReadDTO());
             return Ok(pagosDto);
 
         }

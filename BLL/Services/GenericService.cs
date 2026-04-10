@@ -21,54 +21,55 @@ namespace BLL.Services
             _validator = validator;
         }
 
-        public virtual async Task<Result<T>> Add(T TEntity)
+        public virtual async Task<Result<T>> Add(T entity)
         {
-            var validationResult = await _validator.ValidateAsync(TEntity);
+            var validationResult = await _validator.ValidateAsync(entity);
             if (!validationResult.IsValid)
             {
                 return Result<T>.Fail(validationResult.Errors.ToString()!);
             }
 
-            await _repository.Add(TEntity);
-            return Result<T>.Succes(TEntity);
+            await _repository.Add(entity);
+            return Result<T>.Succes(entity);
 
         }
 
         public virtual async Task<Result<string>> Delete(int id)
         {
-            var TEntity = await _repository.GetById(id);
-            if (TEntity == null)
+
+            var entity = await _repository.GetById(id);
+            if (entity == null)
             {
                 return Result<string>.Fail($"El id {id} no existe.");
             }
-            await _repository.Remove(TEntity);
+            await _repository.Remove(entity);
 
             return Result<string>.Succes("Registro eliminado");
         }
 
         public virtual async Task<Result<IEnumerable<T?>>> GetAll()
         {
-            var TEntities = await _repository.GetAll();
-            if (!TEntities.Any())
+            var entities = await _repository.GetAll();
+            if (!entities.Any())
             {
                 return Result<IEnumerable<T?>>.Fail("Aun no hay registros.");
             }
 
-            return Result<IEnumerable<T?>>.Succes(TEntities);
+            return Result<IEnumerable<T?>>.Succes(entities);
         }
 
         public virtual async Task<Result<T>> GetById(int id)
         {
-            var TEntity = await _repository.GetById(id);
-            if (TEntity == null)
+            var entity = await _repository.GetById(id);
+            if (entity == null)
             {
                 return Result<T>.Fail($"Registro con id {id} no se encuentra.");
             }
 
-            return Result<T>.Succes(TEntity);
+            return Result<T>.Succes(entity);
         }
 
-        public virtual async Task<Result<T>> Update(int id, T TEntity)
+        public virtual async Task<Result<T>> Update(int id, T entity)
         {
             // Validamos que el tipo de entrada Id exista.
             var entityExiste = await _repository.GetById(id);
@@ -78,16 +79,16 @@ namespace BLL.Services
             }
 
             //Validamos que los datos ingresados a TEntity sean correctos
-            var validationResult = await _validator.ValidateAsync(TEntity);
+            var validationResult = await _validator.ValidateAsync(entity);
             if (!validationResult.IsValid)
             {
                 return Result<T>.Fail(validationResult.Errors.ToString()!);
             }
 
             //el id para que el repo busque la entidad y a partir de ahi reemplace con TEntity.
-            await _repository.Update(id ,TEntity);
+            await _repository.Update(id, entity);
 
-            return Result<T>.Succes(entityExiste);        
+            return Result<T>.Succes(entityExiste);
         }
     }
 }

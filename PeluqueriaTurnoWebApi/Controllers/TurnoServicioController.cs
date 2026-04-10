@@ -6,7 +6,7 @@ using PeluqueriaTurnoWebApi.Mappings;
 namespace PeluqueriaTurnoWebApi.Controllers
 {
     [ApiController]
-    [Route("api/{controller}")]
+    [Route("api/[controller]")]
     public class TurnoServicioController : ControllerBase
     {
        private readonly ITurnoServicioService _turnoServicioService;
@@ -25,13 +25,13 @@ namespace PeluqueriaTurnoWebApi.Controllers
                 return BadRequest(turnoServicios.Errors);
             }
 
-            var turnoServiciosDtos = turnoServicios.Data!.Select(t => t.ToReadDto());
+            var turnoServiciosDtos = turnoServicios.Data!.Select(t => t!.ToReadDto());
             return Ok(turnoServiciosDtos);
         }
 
 
         [HttpGet("{id:int}")]
-        public async Task<ActionResult<TurnoServicioReadDTO>> GetTurnoServicios([FromRoute] int id)
+        public async Task<ActionResult<TurnoServicioReadDTO>> GetTurnoServicio([FromRoute] int id)
         {
             var turnoServicios = await _turnoServicioService.GetById(id);
             if (!turnoServicios.IsValid)
@@ -45,7 +45,7 @@ namespace PeluqueriaTurnoWebApi.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult> CreateTurnoServicio([FromBody] TurnoServicioCreateDTO turnoServicioDto)
+        public async Task<ActionResult<TurnoServicioReadDTO>> CreateTurnoServicio([FromBody] TurnoServicioCreateDTO turnoServicioDto)
         {
             var turnoServicioToEntity = turnoServicioDto.ToCreateEntity();
             var createTurnoServicio = await _turnoServicioService.Add(turnoServicioToEntity);
@@ -54,7 +54,7 @@ namespace PeluqueriaTurnoWebApi.Controllers
                 return BadRequest(createTurnoServicio.Errors);
             }
 
-            return NoContent();
+            return CreatedAtAction(nameof(GetTurnoServicio), new { id = createTurnoServicio.Data!.TurnoServicioId}, createTurnoServicio.Data);
         }
 
         [HttpPut("{id:int}")]

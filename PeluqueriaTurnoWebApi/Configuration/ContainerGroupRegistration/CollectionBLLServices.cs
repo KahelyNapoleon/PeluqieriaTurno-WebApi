@@ -1,5 +1,6 @@
 ﻿using BLL.Services;
 using BLL.Services.Interfaces;
+using DAL.UnitOfWork.IUnitOfWork;
 
 namespace PeluqueriaTurnoWebApi.Configuration.ContainerGroupRegistration
 {
@@ -16,6 +17,7 @@ namespace PeluqueriaTurnoWebApi.Configuration.ContainerGroupRegistration
             services.AddScoped<ITipoServicioService, TipoServicioService>();
             services.AddScoped<ITurnoService, TurnoService>();
             services.AddScoped<ITurnoServicioService, TurnoServicioService>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             return services;
         }

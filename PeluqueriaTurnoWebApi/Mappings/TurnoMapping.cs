@@ -18,5 +18,17 @@ namespace PeluqueriaTurnoWebApi.Mappings
             };
         }
 
+        public static Turno ToEntity(this TurnoUpdateCreateDTO t)
+        {
+            return new Turno
+            {
+                Detalle = t.Detalle,
+                ClienteId = t.ClienteId,
+                EstadoTurnoId = t.EstadoTurnoId,
+                HoraTurno = t.HoraTurno,
+                FechaTurno = t.FechaTurno
+            };
+        }
+
     }
 }

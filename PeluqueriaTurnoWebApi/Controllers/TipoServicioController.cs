@@ -6,7 +6,7 @@ using PeluqueriaTurnoWebApi.Mappings;
 namespace PeluqueriaTurnoWebApi.Controllers
 {
     [ApiController]
-    [Route("api/{controller}")]
+    [Route("api/[controller]")]
     public class TipoServicioController : ControllerBase
     {
         private readonly ITipoServicioService _tipoServicio;
@@ -25,7 +25,7 @@ namespace PeluqueriaTurnoWebApi.Controllers
                 return BadRequest(tipoServicios.Errors);
             }
 
-            var tipoServiciosDto = tipoServicios.Data!.Select(t => t.ToReadDto());
+            var tipoServiciosDto = tipoServicios.Data!.Select(t => t!.ToReadDto());
             return Ok(tipoServiciosDto);
         }
 

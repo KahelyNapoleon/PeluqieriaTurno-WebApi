@@ -25,7 +25,7 @@ namespace PeluqueriaTurnoWebApi.Controllers
                 return BadRequest(metodoPagos.Errors);
             }
 
-            var metodosPagosDto = metodoPagos.Data!.Select(m => m.ToReadDTO());
+            var metodosPagosDto = metodoPagos.Data!.Select(m => m!.ToReadDTO());
 
             return Ok(metodosPagosDto);
         }

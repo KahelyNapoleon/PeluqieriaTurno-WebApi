@@ -27,7 +27,7 @@ namespace PeluqueriaTurnoWebApi.Controllers
                 return BadRequest(estadoTurnos.Errors);
             }
 
-            var estadoTurnosDTO = estadoTurnos.Data!.Select(e => e.ToReadDTO());
+            var estadoTurnosDTO = estadoTurnos.Data!.Select(e => e!.ToReadDTO());
 
             return Ok(estadoTurnosDTO);
         }
@@ -47,7 +47,7 @@ namespace PeluqueriaTurnoWebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateEstadoTurno([FromBody] EstadoTurnoCreateUpdateDTO estadoTurno)
+        public async Task<ActionResult<EstadoTurnoReadDTO>> CreateEstadoTurno([FromBody] EstadoTurnoCreateUpdateDTO estadoTurno)
         {
             var estadoTurnoToEntity = estadoTurno.ToEntity();
 
