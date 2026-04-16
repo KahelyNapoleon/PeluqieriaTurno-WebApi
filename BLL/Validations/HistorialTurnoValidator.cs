@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Contracts.DTOs.HistorialTurnoDTOs;
 using DomainLayer;
 using DomainLayer.Models;
 using FluentValidation;
 
 namespace BLL.Validations
 {
-    public class HistorialTurnoValidator : AbstractValidator<HistorialTurno>
+    public class HistorialTurnoValidator : AbstractValidator<HistorialTurnoCreateUpdateDTO>
     {
         public HistorialTurnoValidator()
         {

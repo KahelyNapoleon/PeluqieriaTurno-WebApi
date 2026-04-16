@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36811.4 d17.14
+VisualStudioVersion = 17.14.36811.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PeluqueriaTurnoWebApi", "PeluqueriaTurnoWebApi.csproj", "{C156E3E9-0E70-4124-BC38-16AD432D303B}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAL", "..\DAL\DAL.csproj", "{294C6093-4C0F-44B1-8BD6-20386D87D911}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DomainLayer", "..\DomainLayer\DomainLayer.csproj", "{9F73A2C1-D56D-41A5-8B21-D403B3C22BD3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contracts", "..\Contracts\Contracts.csproj", "{36E284FE-5D69-497C-82D7-DFA82CC1CE16}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{9F73A2C1-D56D-41A5-8B21-D403B3C22BD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9F73A2C1-D56D-41A5-8B21-D403B3C22BD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9F73A2C1-D56D-41A5-8B21-D403B3C22BD3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36E284FE-5D69-497C-82D7-DFA82CC1CE16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36E284FE-5D69-497C-82D7-DFA82CC1CE16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36E284FE-5D69-497C-82D7-DFA82CC1CE16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36E284FE-5D69-497C-82D7-DFA82CC1CE16}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

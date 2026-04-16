@@ -1,4 +1,5 @@
-﻿using DomainLayer.Models;
+﻿using Contracts.DTOs.ServicioDTOs;
+using DomainLayer.Models;
 using FluentValidation;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace BLL.Validations
 {
-    public class ServicioValidator : AbstractValidator<Servicio>
+    public class ServicioValidator : AbstractValidator<ServicioCreateUpdateDTO>
     {
         public ServicioValidator()
         {

@@ -1,0 +1,12 @@
+﻿Advertencias: Leer bien, para entender el motivo de esta capa.
+
+Pendientes:
+[3/16/2026]
+1-Definir con atencion cada Metodo generico de servicio con los datos que se enviaran y recibiran del controlador
+
+2-En cada IService completar los tipos de para la consulta y manipualcion de datos (Entity,TReadDTO,TCreateUpdateDTO)
+
+[4/16/2026]
+1-Complementar y corregir la clase GenericService<T,TReadDTO,TCreateUpdateDTO> 
+
+2-Para luego seguiir observando las advertencias y errores de todas las clases de servicios que la implementan

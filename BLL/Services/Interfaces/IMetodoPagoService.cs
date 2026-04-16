@@ -1,4 +1,5 @@
-﻿using DomainLayer.Models;
+﻿using Contracts.DTOs.MetodoPagoDTOs;
+using DomainLayer.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BLL.Services.Interfaces
 {
-    public interface IMetodoPagoService : IGenericService<MetodoPago>
+    public interface IMetodoPagoService : IGenericService<MetodoPago, MetodoPagoReadDTO, MetodoPagoCreateUpdateDTO>
     {
     }
 }

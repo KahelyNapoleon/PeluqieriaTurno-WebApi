@@ -1,0 +1,3 @@
+﻿AVISOS Y ADVERTENCIAS:
+1-Capa no aplicada a ninguna implementacion
+2-Razon(1):Falta generar el mapping y la implementacion en los servicios.

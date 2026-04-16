@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 using FluentValidation;
 using DomainLayer;
 using DomainLayer.Models;
+using Contracts.DTOs.ClienteDTOs;
 
 namespace BLL.Validations
 {
-    public class ClienteValidator : AbstractValidator<Cliente>
+    public class ClienteValidator : AbstractValidator<ClienteCreateUpdateDTO>
     {
         public ClienteValidator() 
         {

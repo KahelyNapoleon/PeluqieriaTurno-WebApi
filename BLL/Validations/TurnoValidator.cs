@@ -1,4 +1,5 @@
-﻿using DomainLayer.Models;
+﻿using Contracts.DTOs.TurnoDTOs;
+using DomainLayer.Models;
 using FluentValidation;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace BLL.Validations
 {
-    public class TurnoValidator : AbstractValidator<Turno>
+    public class TurnoValidator : AbstractValidator<TurnoUpdateCreateDTO>
     {
         public TurnoValidator()
         {

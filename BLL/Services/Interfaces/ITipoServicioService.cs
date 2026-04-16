@@ -1,4 +1,5 @@
-﻿using DomainLayer.Models;
+﻿using Contracts.DTOs.TipoServicioDTOs;
+using DomainLayer.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BLL.Services.Interfaces
 {
-    public interface ITipoServicioService : IGenericService<TipoServicio>
+    public interface ITipoServicioService : IGenericService<TipoServicio, TipoServicioReadDTO, TipoServicioCreateUpdateDTO>
     {
     }
 }

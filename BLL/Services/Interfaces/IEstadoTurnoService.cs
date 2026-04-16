@@ -1,4 +1,5 @@
-﻿using DomainLayer.Models;
+﻿using Contracts.DTOs.EstadoTurnoDTOs;
+using DomainLayer.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BLL.Services.Interfaces
 {
-    public interface IEstadoTurnoService : IGenericService<EstadoTurno>
+    public interface IEstadoTurnoService : IGenericService<EstadoTurno, EstadoTurnoReadDTO, EstadoTurno>
     {
     }
 }
