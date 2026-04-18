@@ -43,6 +43,6 @@ Se implementa autenticación mediante JWT Bearer:
 
 
 ##Estado:
-Proyecto en mejora continua. Se siguen agregando funcionalidades y mejoras de seguridad.
+Proyecto en mejora continua. Se siguen agregando funcionalidades y mejoras de seguridad, o dicho de otra manera aun no se ah finalizado.
 
 
