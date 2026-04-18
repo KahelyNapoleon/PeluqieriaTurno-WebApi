@@ -9,8 +9,9 @@ using System.Threading.Tasks;
 
 namespace BLL.Services.Interfaces
 {
-    public interface ITurnoService : IGenericService<Turno, TurnoReadDTO, TurnoUpdateCreateDTO>
+    public interface ITurnoService : IGenericService<Turno, TurnoReadDTO, TurnoCreateUpdateDTO>
     {
-        Task<Result<IEnumerable<Turno?>>> GetPaged(int pageNumber, int pageSize);
+        //Cambiar la implemetnacion de este metodo en la clase correspondiente
+        Task<Result<IEnumerable<TurnoReadDTO?>>> GetPaged(int pageNumber, int pageSize);
     }
 }

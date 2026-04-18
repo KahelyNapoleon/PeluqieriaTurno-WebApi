@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace BLL.Validations
 {
-    public class TurnoValidator : AbstractValidator<TurnoUpdateCreateDTO>
+    public class TurnoValidator : AbstractValidator<TurnoCreateUpdateDTO>
     {
         public TurnoValidator()
         {

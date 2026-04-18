@@ -1,10 +1,10 @@
 ﻿using BLL.Services.Interfaces;
+using Contracts.DTOs.ClienteDTOs;
 using DAL.Repositorios.Interfaces;
 using DomainLayer.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using PeluqueriaTurnoWebApi.DTOs.ClienteDTOs;
-using PeluqueriaTurnoWebApi.Mappings;
+
 
 namespace PeluqueriaTurnoWebApi.Controllers
 {
@@ -28,10 +28,8 @@ namespace PeluqueriaTurnoWebApi.Controllers
                 return NotFound(clientes.Errors);
             }
 
-            //Convierto las lista de Cliente a ClienteDTO.
-            var clienteDtoToList = clientes.Data!.Select(c => c!.ToReadDTO()); 
 
-            return Ok(clienteDtoToList);
+            return Ok(clientes);
         }
 
         [HttpGet("{id:int}")]
@@ -43,16 +41,14 @@ namespace PeluqueriaTurnoWebApi.Controllers
                 return BadRequest(cliente.Errors);
             }
 
-            var clienteDto = cliente.Data!.ToReadDTO();
-
-            return Ok(clienteDto);
+            return Ok(cliente);
         }
 
         [HttpPost]
-        public async Task<ActionResult<ClienteCreateDTO>> AddCliente([FromBody] ClienteCreateDTO cliente)
+        public async Task<ActionResult<ClienteReadDTO>> AddCliente([FromBody] ClienteCreateUpdateDTO cliente)
         {
-            var clienteToEntity = cliente.ToEntity();
-            var agregarCliente = await _clienteService.Add(clienteToEntity);
+         
+            var agregarCliente = await _clienteService.Add(cliente);
             if (!agregarCliente.IsValid)
             {
                 return BadRequest(agregarCliente.Errors);
@@ -61,12 +57,9 @@ namespace PeluqueriaTurnoWebApi.Controllers
         }
 
         [HttpPut("{id:int}")]
-        public async Task<ActionResult> UpdateCliente([FromBody] ClienteUpdateDTO cliente, [FromRoute]int id)
+        public async Task<ActionResult> UpdateCliente([FromBody] ClienteCreateUpdateDTO cliente, [FromRoute]int id)
         {
-            var clienteEntity = new Cliente();
-            cliente.UpdateCliente(clienteEntity);
-
-            var actualizarCliente = await _clienteService.Update(id,clienteEntity);
+            var actualizarCliente = await _clienteService.Update(id,cliente);
             if (!actualizarCliente.IsValid)
             {
                 return BadRequest(actualizarCliente.Errors);

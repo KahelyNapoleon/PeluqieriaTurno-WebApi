@@ -1,5 +1,6 @@
 ﻿using BLL.Services;
 using BLL.Services.Interfaces;
+using Contracts.DTOs.EstadoTurnoDTOs;
 using DomainLayer.Models;
 using Microsoft.AspNetCore.Mvc;
 using PeluqueriaTurnoWebApi.DTOs.EstadoTurnoDTOs;
@@ -27,9 +28,7 @@ namespace PeluqueriaTurnoWebApi.Controllers
                 return BadRequest(estadoTurnos.Errors);
             }
 
-            var estadoTurnosDTO = estadoTurnos.Data!.Select(e => e!.ToReadDTO());
-
-            return Ok(estadoTurnosDTO);
+            return Ok(estadoTurnos);
         }
 
         [HttpGet("{id:int}")]
@@ -41,17 +40,15 @@ namespace PeluqueriaTurnoWebApi.Controllers
                 return BadRequest(estadoTurno.Errors);
             }
 
-            var estadoTurnoDto = estadoTurno.Data!.ToReadDTO();
-
-            return Ok(estadoTurnoDto);
+            return Ok(estadoTurno);
         }
 
         [HttpPost]
         public async Task<ActionResult<EstadoTurnoReadDTO>> CreateEstadoTurno([FromBody] EstadoTurnoCreateUpdateDTO estadoTurno)
         {
-            var estadoTurnoToEntity = estadoTurno.ToEntity();
+  
 
-            var crearEstadoTurno = await _estadoTurnoService.Add(estadoTurnoToEntity);
+            var crearEstadoTurno = await _estadoTurnoService.Add(estadoTurno);
             if (!crearEstadoTurno.IsValid)
             {
                 return BadRequest(crearEstadoTurno.Errors);
@@ -62,12 +59,9 @@ namespace PeluqueriaTurnoWebApi.Controllers
 
         [HttpPut("{id:int}")]
         public async Task<ActionResult> UpdateEstadoTurno([FromBody] EstadoTurnoCreateUpdateDTO estadoTurnoDto, [FromRoute] int id)
-        {
-            //EstadoTurno estadoTurnoEntity = new EstadoTurno();
-            //estadoTurnoDto.ToUpdate(estadoTurnoEntity);
-            var estadoTurnoToEntity = estadoTurnoDto.ToEntity();
+        { 
 
-            var actualizarEstadoTurno = await _estadoTurnoService.Update(id,estadoTurnoToEntity);
+            var actualizarEstadoTurno = await _estadoTurnoService.Update(id,estadoTurnoDto);
             if (!actualizarEstadoTurno.IsValid)
             {
                 return BadRequest(actualizarEstadoTurno.Errors);

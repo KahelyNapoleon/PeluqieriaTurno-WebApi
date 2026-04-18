@@ -4,7 +4,7 @@ using DomainLayer.Models;
 
 namespace BLL.MappingMethods
 {
-    public class TurnoMapping : IMappingService<Turno, TurnoReadDTO, TurnoUpdateCreateDTO>
+    public class TurnoMapping : IMappingService<Turno, TurnoReadDTO, TurnoCreateUpdateDTO>
     {
         public TurnoReadDTO ToReadDTO(Turno t)
         {
@@ -19,7 +19,7 @@ namespace BLL.MappingMethods
             };
         }
 
-        public void UpdateEntity(TurnoUpdateCreateDTO dto, Turno t)
+        public void UpdateEntity(TurnoCreateUpdateDTO dto, Turno t)
         {
             t.Detalle = dto.Detalle;
             t.FechaTurno = dto.FechaTurno;
@@ -28,7 +28,7 @@ namespace BLL.MappingMethods
             t.EstadoTurnoId = dto.EstadoTurnoId;
         }
 
-        public Turno ToEntity(TurnoUpdateCreateDTO t)
+        public Turno ToEntity(TurnoCreateUpdateDTO t)
         {
             return new Turno
             {

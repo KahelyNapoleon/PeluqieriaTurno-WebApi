@@ -10,3 +10,8 @@ Pendientes:
 1-Complementar y corregir la clase GenericService<T,TReadDTO,TCreateUpdateDTO> 
 
 2-Para luego seguiir observando las advertencias y errores de todas las clases de servicios que la implementan
+
+[4/18/2026]
+1-Corregir los metodos del servicio de turnoService, 
+2-Reveer los demas servicios y corregir lo que este mal,
+3-Recordar que cada servicio debe implementar su propia interfaz para un mejor desacoplamiento del servicioGenerico

@@ -5,18 +5,26 @@ using DAL.Repositorios.Interfaces;
 using DomainLayer.Models;
 using FluentValidation;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BLL.Services
 {
-    public class ClienteService
-        (IClienteRepository clienteRepository,
-        IValidator<ClienteCreateUpdateDTO> validator,
-        IMappingService<Cliente,ClienteReadDTO,ClienteCreateUpdateDTO> mapper)
-        : GenericService<Cliente,ClienteReadDTO,ClienteCreateUpdateDTO>(clienteRepository, validator, mapper) , IClienteService
+    public class ClienteService :
+        GenericService<Cliente, ClienteReadDTO, ClienteCreateUpdateDTO>,
+        IClienteService
     {
+        private readonly IClienteRepository _clienteRepository;
+
+        public ClienteService(
+            IClienteRepository clienteRepository,
+            IValidator<ClienteCreateUpdateDTO> validator,
+            IMappingService<Cliente, ClienteReadDTO, ClienteCreateUpdateDTO> mapper)
+            : base(clienteRepository, validator, mapper)
+        {
+            _clienteRepository = clienteRepository ?? throw new ArgumentNullException(nameof(clienteRepository));
+            _ = validator ?? throw new ArgumentNullException(nameof(validator));
+            _ = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        }
+
+        
     }
 }

@@ -1,4 +1,6 @@
-﻿using BLL.Services.Interfaces;
+﻿using BLL.Mapping;
+using BLL.Services.Interfaces;
+using Contracts.DTOs.TipoServicioDTOs;
 using DAL.Repositorios.Interfaces;
 using DomainLayer.Models;
 using FluentValidation;
@@ -10,7 +12,12 @@ using System.Threading.Tasks;
 
 namespace BLL.Services
 {
-    public class TipoServicioService(ITipoServicioRepository tipoServicioRepository, IValidator<TipoServicio> validator) : GenericService<TipoServicio>(tipoServicioRepository, validator), ITipoServicioService
+    public class TipoServicioService
+        (ITipoServicioRepository tipoServicioRepository,
+        IValidator<TipoServicioCreateUpdateDTO> validator,
+        IMappingService<TipoServicio, TipoServicioReadDTO, TipoServicioCreateUpdateDTO> mapper) 
+        : GenericService<TipoServicio, TipoServicioReadDTO, TipoServicioCreateUpdateDTO>(tipoServicioRepository, validator, mapper)
+        , ITipoServicioService
     {
     }
 }

@@ -1,4 +1,6 @@
-﻿using BLL.Services.Interfaces;
+﻿using BLL.Mapping;
+using BLL.Services.Interfaces;
+using Contracts.DTOs.PagoDTOs;
 using DAL.Repositorios.Interfaces;
 using DomainLayer.Models;
 using FluentValidation;
@@ -10,7 +12,10 @@ using System.Threading.Tasks;
 
 namespace BLL.Services
 {
-    public class PagoService(IPagoRepository pagoRepository, IValidator<Pago> validator) : GenericService<Pago>(pagoRepository, validator), IPagoService
+    public class PagoService
+        (IPagoRepository pagoRepository, IValidator<PagoCreateUpdateDTO> validator, IMappingService<Pago,PagoReadDTO,PagoCreateUpdateDTO> mapper)
+        : GenericService<Pago, PagoReadDTO, PagoCreateUpdateDTO>(pagoRepository, validator, mapper),
+        IPagoService
     {
     }
 }

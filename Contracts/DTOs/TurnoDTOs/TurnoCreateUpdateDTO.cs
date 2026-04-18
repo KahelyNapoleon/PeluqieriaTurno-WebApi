@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Contracts.DTOs.TurnoDTOs
 {
-    public class TurnoUpdateCreateDTO
+    public class TurnoCreateUpdateDTO
     {
         public string? Detalle { get; set; }//EL DETALLE PUEDE CAMBIAR SI EL CLIENTE CAMBIA O QUITA UN SERVICIO.
 

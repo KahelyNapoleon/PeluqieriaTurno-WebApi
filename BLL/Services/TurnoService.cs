@@ -10,6 +10,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Contracts.DTOs.TurnoDTOs;
+using Contracts.DTOs.HistorialTurnoDTOs;
+using BLL.Mapping;
 
 namespace BLL.Services
 {
@@ -17,17 +20,23 @@ namespace BLL.Services
     {
      
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IValidator<Turno> _validatorTurno;
-        private readonly IValidator<HistorialTurno> _validatorHistorialTurno;
+        private readonly IValidator<TurnoCreateUpdateDTO> _validatorTurno;
+        private readonly IValidator<HistorialTurnoCreateUpdateDTO> _validatorHistorialTurno;
+        private readonly IMappingService<Turno, TurnoReadDTO, TurnoCreateUpdateDTO> _mapper;
 
-        public TurnoService(IUnitOfWork unitOfWork, IValidator<Turno> validatorTurno, IValidator<HistorialTurno> validatorHistorialTurno)
+        public TurnoService(IUnitOfWork unitOfWork,
+            IValidator<TurnoCreateUpdateDTO> validatorTurno,
+            IValidator<HistorialTurnoCreateUpdateDTO> validatorHistorialTurno,
+            IMappingService<Turno, TurnoReadDTO, TurnoCreateUpdateDTO> mapper
+            )
         {
             _unitOfWork = unitOfWork;
             _validatorTurno = validatorTurno;
             _validatorHistorialTurno = validatorHistorialTurno;
+            _mapper = mapper;
         }
 
-        public async Task<Result<IEnumerable<Turno?>>> GetPaged(int pageNumber, int pageSize)
+        public async Task<Result<IEnumerable<TurnoReadDTO?>>> GetPaged(int pageNumber, int pageSize)
         {
             var result = await _unitOfWork.TurnoRepository.GetPaged(pageNumber, pageSize);
             if (!result.Any())
@@ -35,8 +44,12 @@ namespace BLL.Services
                 return Result<IEnumerable<Turno?>>.Fail("Aun no hay registros de turnos.");
             }
 
-            return Result<IEnumerable<Turno?>>.Succes(result);
+            var turnosDTO = result.Select(t => _mapper.ToReadDTO(t));
+
+            return Result<IEnumerable<TurnoReadDTO?>>.Succes(turnosDTO);
         }
+
+        //>>>>>>>>>>>>>CORREGIR TODO DE ACA HACIA ABAJO Y REVEER LO DE ARRIBA<<<<<<<<<<<<<<<<<<<<<<<<<
 
         public async Task<Result<IEnumerable<Turno?>>> GetAll()
         {

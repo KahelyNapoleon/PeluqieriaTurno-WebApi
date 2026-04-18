@@ -8,7 +8,8 @@ using System.Threading.Tasks;
 
 namespace BLL.Services.Interfaces
 {
-    public interface IEstadoTurnoService : IGenericService<EstadoTurno, EstadoTurnoReadDTO, EstadoTurno>
+    public interface IEstadoTurnoService :
+        IGenericService<EstadoTurno, EstadoTurnoReadDTO, EstadoTurnoCreateUpdateDTO> 
     {
     }
 }

@@ -12,7 +12,8 @@ using FluentValidation;
 
 namespace BLL.Services
 {
-    public class GenericService<Entity, TReadDTO, TCreateUpdateDTO> : IGenericService<Entity, TReadDTO, TCreateUpdateDTO> where Entity : class
+    public class GenericService<Entity, TReadDTO, TCreateUpdateDTO>
+        : IGenericService<Entity, TReadDTO, TCreateUpdateDTO> where Entity : class
                                                                                                                           where TReadDTO : class
                                                                                                                           where TCreateUpdateDTO : class                                 
     {
@@ -28,18 +29,8 @@ namespace BLL.Services
             _mapper = mapper;
         }
 
-        /*
-         PSEUDOCÓDIGO (plan detallado):
-         1. Validar que el DTO de entrada no sea nulo; lanzar ArgumentNullException si lo es.
-         2. Ejecutar la validación fluida (_validator) sobre el DTO de creación/actualización.
-            - Si no es válido, construir un mensaje de error concatenando los mensajes de cada Error.
-            - Retornar Result<TReadDTO>.Fail(...) con ese mensaje.
-         3. Convertir el DTO de entrada a la entidad con _mapper.ToEntity.
-         4. Llamar a _repository.Add(entity) y esperar a que termine.
-            - Asumimos que el repositorio (p. ej. EF Core) actualizará la entidad con el Id generado.
-         5. Convertir la entidad actualizada (que contiene el Id) a TReadDTO mediante _mapper.ToReadDto.
-         6. Retornar Result<TReadDTO>.Succes(readDto) para devolver el DTO de lectura con el Id generado.
-        */
+        
+      
 
         public virtual async Task<Result<TReadDTO>> Add(TCreateUpdateDTO entityDto)
         {
@@ -67,6 +58,7 @@ namespace BLL.Services
 
         public virtual async Task<Result<string>> Delete(int id)
         {
+            if (id <= 0) throw new ArgumentNullException("Id incorrecto");
 
             var entity = await _repository.GetById(id);
             if (entity == null)
