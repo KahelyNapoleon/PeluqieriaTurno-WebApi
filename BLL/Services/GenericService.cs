@@ -59,7 +59,7 @@ namespace BLL.Services
             await _repository.Add(entity);
 
             // Convertimos la entidad actualizada (con Id) al DTO de lectura y lo retornamos
-            var readDto = _mapper.ToReadDto(entity);
+            var readDto = _mapper.ToReadDTO(entity);
 
             return Result<TReadDTO>.Succes(readDto);
         }
@@ -91,37 +91,52 @@ namespace BLL.Services
             return Result<IEnumerable<TReadDTO>>.Succes(entitiesDto);
         }
 
-        public virtual async Task<Result<Entity>> GetById(int id)
+        public virtual async Task<Result<TReadDTO>> GetById(int id)
         {
             var entity = await _repository.GetById(id);
             if (entity == null)
             {
-                return Result<Entity>.Fail($"Registro con id {id} no se encuentra.");
+                return Result<TReadDTO>.Fail($"Registro con id {id} no se encuentra.");
             }
 
-            return Result<Entity>.Succes(entity);
+            var entityDto = _mapper.ToReadDTO(entity);
+
+            return Result<TReadDTO>.Succes(entityDto);
         }
 
-        public virtual async Task<Result<Entity>> Update(int id, Entity entity)
+        public virtual async Task<Result<TReadDTO>> Update(int id, TCreateUpdateDTO entity)
         {
-            // Validamos que el tipo de entrada Id exista.
-            var entityExiste = await _repository.GetById(id);
-            if (entityExiste == null)
-            {
-                return Result<Entity>.Fail("Id invalido, no existe en los registros");
-            }
-
+            if (id <= 0) throw new ArgumentNullException("Id incorrecto");
             //Validamos que los datos ingresados a TEntity sean correctos
             var validationResult = await _validator.ValidateAsync(entity);
             if (!validationResult.IsValid)
             {
-                return Result<Entity>.Fail(validationResult.Errors.ToString()!);
+                var errors = string.Join("; ", validationResult.Errors.Select(e => e.ErrorMessage));
+                return Result<TReadDTO>.Fail(errors);
             }
 
-            //el id para que el repo busque la entidad y a partir de ahi reemplace con TEntity.
-            await _repository.Update(id, entity);
+            // Validamos que el registro de id existe realmente
+            var entityExiste = await _repository.GetById(id);
+            if (entityExiste == null)
+            {
+                return Result<TReadDTO>.Fail("Id incorrecto o inexistente");
+            }
 
-            return Result<Entity>.Succes(entityExiste);
+            //Realizo la conversion del valor de entrada entity que actualizar a los valores reales
+            //Para luego poder ejecutar el metodo del repositorio de Update(id, entity)
+            var toEntity =  _mapper.ToEntity(entity);
+
+            await _repository.Update(id, toEntity);
+
+            var entityUpdate = await _repository.GetById(id);
+            if(entityUpdate == null)
+            {
+                return Result<TReadDTO>.Fail("Error al recuperar el registro");
+            }
+
+            var entityUpdateDto = _mapper.ToReadDTO(entityUpdate);
+
+            return Result<TReadDTO>.Succes(entityUpdateDto);
         }
     }
 }

@@ -14,7 +14,7 @@ namespace BLL.Services.Interfaces
         Task<Result<IEnumerable<TReadDTO>>> GetAll();
         Task<Result<TReadDTO>> GetById(int id);
         Task<Result<TReadDTO>> Add(TCreateUpdateDTO entity);
-        Task<Result<TCreateUpdateDTO>> Update(int id, TCreateUpdateDTO entity);
+        Task<Result<TReadDTO>> Update(int id, TCreateUpdateDTO entity);
         Task<Result<string>> Delete(int id);
 
         //
