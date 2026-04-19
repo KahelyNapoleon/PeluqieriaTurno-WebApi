@@ -15,3 +15,12 @@ Pendientes:
 1-Corregir los metodos del servicio de turnoService, 
 2-Reveer los demas servicios y corregir lo que este mal,
 3-Recordar que cada servicio debe implementar su propia interfaz para un mejor desacoplamiento del servicioGenerico
+
+[4/19/2026]
+1-Hay una inconsistencia en la etapa del metodo de GenericService.Add() que espera retornar un tipo TReadDTO
+A-El error se encuentra en que no podemos recuperar la entidad recien agregada en si porque no sabemos que id
+se le fue asignado. (O ESTOY MUY CANSADO Y NO ME DA LA CAPOCHA O TENGO RAZON)
+B-Ver en corregir el tipo de valor devuelto del metodo Add().
+
+2-Ver con especial atencion la continuacion del Servicio de turno donde se implementa el patron UoW(transaccio
+de datos de turnos->historialTurnos).

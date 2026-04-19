@@ -22,18 +22,21 @@ namespace BLL.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IValidator<TurnoCreateUpdateDTO> _validatorTurno;
         private readonly IValidator<HistorialTurnoCreateUpdateDTO> _validatorHistorialTurno;
-        private readonly IMappingService<Turno, TurnoReadDTO, TurnoCreateUpdateDTO> _mapper;
+        private IMappingService<Turno, TurnoReadDTO, TurnoCreateUpdateDTO> _mapper;
+        private IMappingService<HistorialTurno, HistorialTurnoReadDTO, HistorialTurnoCreateUpdateDTO> _mapperHistorialTurno;
 
         public TurnoService(IUnitOfWork unitOfWork,
             IValidator<TurnoCreateUpdateDTO> validatorTurno,
             IValidator<HistorialTurnoCreateUpdateDTO> validatorHistorialTurno,
             IMappingService<Turno, TurnoReadDTO, TurnoCreateUpdateDTO> mapper
+            IMappingService<HistorialTurno, HistorialTurnoReadDTO, HistorialTurnoCreateUpdateDTO> mapperHistorialTurno
             )
         {
             _unitOfWork = unitOfWork;
             _validatorTurno = validatorTurno;
             _validatorHistorialTurno = validatorHistorialTurno;
             _mapper = mapper;
+            _mapperHistorialTurno = mapperHistorialTurno;
         }
 
         public async Task<Result<IEnumerable<TurnoReadDTO?>>> GetPaged(int pageNumber, int pageSize)
@@ -51,66 +54,78 @@ namespace BLL.Services
 
         //>>>>>>>>>>>>>CORREGIR TODO DE ACA HACIA ABAJO Y REVEER LO DE ARRIBA<<<<<<<<<<<<<<<<<<<<<<<<<
 
-        public async Task<Result<IEnumerable<Turno?>>> GetAll()
+        public async Task<Result<IEnumerable<TurnoReadDTO?>>> GetAll()
         {
             var turnos = await _unitOfWork.TurnoRepository.GetAll();
             if (!turnos.Any())
             {
-                return Result<IEnumerable<Turno?>>.Fail("Error, aun no hay registros de Turnos");
+                return Result<IEnumerable<TurnoReadDTO?>>.Fail("Error, aun no hay registros de Turnos");
             }
 
-            return Result<IEnumerable<Turno?>>.Succes(turnos);
+            var turnosDTO = turnos.Select(t => _mapper.ToReadDTO(t!));
+
+            return Result<IEnumerable<TurnoReadDTO?>>.Succes(turnosDTO);
         }
 
-        public async Task<Result<Turno>> GetById(int id)
+        public async Task<Result<TurnoReadDTO>> GetById(int id)
         {
             var turno = await _unitOfWork.TurnoRepository.GetById(id);
             if (turno == null)
             {
-                return Result<Turno>.Fail($"No existe registro con id {id}");
+                return Result<TurnoReadDTO>.Fail($"No existe registro con id {id}");
             }
 
-            return Result<Turno>.Succes(turno);
+            var turnoDTO = _mapper.ToReadDTO(turno);
+
+            return Result<TurnoReadDTO>.Succes(turnoDTO);
         }
 
-        public async Task<Result<Turno>> Add(Turno turno)
+        public async Task<Result<TurnoReadDTO>> Add(TurnoCreateUpdateDTO turno)
         {
+            if (turno == null) throw new ArgumentNullException("El registro de turno debe completarse.");
+
             await _unitOfWork.BeginTransactionAsync();
 
             var validarturno = await _validatorTurno.ValidateAsync(turno);
 
             if (!validarturno.IsValid)
             {
-                return Result<Turno>.Fail(validarturno.Errors.ToString()!);
+                var errors = string.Concat("; ", validarturno.Errors.Select(e => e)); 
+                return Result<TurnoReadDTO>.Fail(errors);
             }
+            
+            var turnoToEntity = _mapper.ToEntity(turno);
 
-            await _unitOfWork.TurnoRepository.Add(turno);
+            await _unitOfWork.TurnoRepository.Add(turnoToEntity);
             await _unitOfWork.SaveChangeAsync();
 
             int estadoTurnoDisponible = 0;
             //inicia el historial
-            var inicioHistorialTurno = new HistorialTurno
+            var inicioHistorialTurno = new HistorialTurnoCreateUpdateDTO
             {
-                TurnoId = turno.TurnoId,
+                TurnoId = turnoToEntity.TurnoId,
                 FechaHoraAnterior = null,
-                FechaHoraActual = new DateTimeOffset(turno.FechaTurno, turno.HoraTurno, TimeSpan.FromHours(-3)),
+                FechaHoraActual = new DateTimeOffset(turnoToEntity.FechaTurno, turnoToEntity.HoraTurno, TimeSpan.FromHours(-3)),
                 EstadoTurnoAnterior = estadoTurnoDisponible,
-                EstadoTurnoActual = turno.EstadoTurnoId,
+                EstadoTurnoActual = turnoToEntity.EstadoTurnoId,
             };
 
             //Es necesario validar en el propio codigo donde se valido el turno anteriormente?
             var validarHistorialTurno = await _validatorHistorialTurno.ValidateAsync(inicioHistorialTurno);
             if (!validarHistorialTurno.IsValid)
             {
-                return Result<Turno>.Fail($"Algo salio mal en la validacion, {validarHistorialTurno.Errors}");
+                var errors = string.Concat("; ", validarHistorialTurno.Errors.Select(e => _mapper.ToReadDTO(e)));
+                return Result<TurnoReadDTO>.Fail(errors);
             }
 
-            await _unitOfWork.HistorialTurnoRepository.Add(inicioHistorialTurno);
+            var historialTurnoToEntity = _mapperHistorialTurno.ToEntity(inicioHistorialTurno);
+
+            await _unitOfWork.HistorialTurnoRepository.Add(historialTurnoToEntity);
             await _unitOfWork.SaveChangeAsync();
 
             await _unitOfWork.CommitAsync();
 
-            return Result<Turno>.Succes(turno);
+            return Result<TurnoReadDTO>.Succes(turno);
 
         }
 

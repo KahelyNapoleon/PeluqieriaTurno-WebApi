@@ -3,6 +3,7 @@
     public class HistorialTurnoReadDTO
     {
         public int HistorialTurnoId { get; set; }
+        public int TurnoId { get; set; }
         public DateTimeOffset? FechaHoraAnterior { get; set; }
 
         public DateTimeOffset FechaHoraActual { get; set; }
