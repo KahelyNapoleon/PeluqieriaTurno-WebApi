@@ -3,8 +3,8 @@ using BLL.Services.Interfaces;
 using Contracts.DTOs.EstadoTurnoDTOs;
 using DomainLayer.Models;
 using Microsoft.AspNetCore.Mvc;
-using PeluqueriaTurnoWebApi.DTOs.EstadoTurnoDTOs;
-using PeluqueriaTurnoWebApi.Mappings;
+
+
 
 namespace PeluqueriaTurnoWebApi.Controllers
 {

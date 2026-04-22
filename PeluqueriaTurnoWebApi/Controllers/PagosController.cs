@@ -1,8 +1,7 @@
 ﻿using BLL.Services.Interfaces;
-using DomainLayer.Models;
-using PeluqueriaTurnoWebApi.DTOs.PagoDTOs;
+using Contracts.DTOs.PagoDTOs;
 using Microsoft.AspNetCore.Mvc;
-using PeluqueriaTurnoWebApi.Mappings;
+
 
 namespace PeluqueriaTurnoWebApi.Controllers
 {
@@ -26,8 +25,7 @@ namespace PeluqueriaTurnoWebApi.Controllers
                 return BadRequest(pagos.Errors);
             }
 
-            var pagosDto = pagos.Data!.Select(p => p!.ToReadDTO());
-            return Ok(pagosDto);
+            return Ok(pagos);
 
         }
 
@@ -40,16 +38,14 @@ namespace PeluqueriaTurnoWebApi.Controllers
                 return NotFound(pago.Errors);
             }
 
-            var pagoDto = pago.Data!.ToReadDTO();
-
-            return Ok(pagoDto);
+            return Ok(pago);
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreatePago([FromForm] PagoCreateDTO pagoDto)
+        public async Task<ActionResult> CreatePago([FromForm] PagoCreateUpdateDTO pagoDto)
         {
-            var pagoEntity = pagoDto.ToCreateEntity();
-            var createPago = await _pagoService.Add(pagoEntity);
+            var createPago = await _pagoService.Add(pagoDto);
+
             if (!createPago.IsValid)
             {
                 return BadRequest(createPago.Errors);
@@ -60,10 +56,10 @@ namespace PeluqueriaTurnoWebApi.Controllers
         }
 
         [HttpPut("{id:int}")]
-        public async Task<ActionResult> UpdatePago([FromBody] PagoUpdateDTO pagoDto, [FromRoute] int id)
+        public async Task<ActionResult> UpdatePago([FromBody] PagoCreateUpdateDTO pagoDto, [FromRoute] int id)
         {
-            var pagoUpdateEntity = pagoDto.ToUpdateEntity();
-            var actualizarPago = await _pagoService.Update(id ,pagoUpdateEntity);
+         
+            var actualizarPago = await _pagoService.Update(id ,pagoDto);
             if (!actualizarPago.IsValid)
             {
                 return BadRequest(actualizarPago.Errors);

@@ -1,7 +1,7 @@
 ﻿using BLL.Services.Interfaces;
+using Contracts.DTOs.TurnoDTOs;
 using Microsoft.AspNetCore.Mvc;
-using PeluqueriaTurnoWebApi.DTOs.TurnoDTOs;
-using PeluqueriaTurnoWebApi.Mappings;
+
 
 namespace PeluqueriaTurnoWebApi.Controllers
 {
@@ -25,10 +25,7 @@ namespace PeluqueriaTurnoWebApi.Controllers
                 return BadRequest(turnos.Errors);
             }
 
-            //Transormar turno a TurnoReadDTO.
-            var turnosToDto = turnos.Data!.Select(t => t!.ToDTO());
-
-            return Ok(turnosToDto);
+            return Ok(turnos);
         }
 
         [HttpGet("{id:int}")]
@@ -40,15 +37,13 @@ namespace PeluqueriaTurnoWebApi.Controllers
                 return NotFound(turno.Errors);
             }
 
-            var turnoToDto = turno.Data!.ToDTO();
-            return Ok(turnoToDto);
+            return Ok(turno);
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateTurno([FromBody] TurnoUpdateCreateDTO turno)
+        public async Task<ActionResult> CreateTurno([FromBody] TurnoCreateUpdateDTO turno)
         {
-            var turnoToEntity = turno.ToEntity();
-            var agregarTurno = await _turnoService.Add(turnoToEntity);
+            var agregarTurno = await _turnoService.Add(turno);
             if (!agregarTurno.IsValid)
             {
                 return BadRequest(agregarTurno.Errors);
@@ -58,10 +53,9 @@ namespace PeluqueriaTurnoWebApi.Controllers
         }
 
         [HttpPut("{id:int}")]
-        public async Task<ActionResult> UpdateTurno([FromBody] TurnoUpdateCreateDTO turno, [FromRoute] int id)
+        public async Task<ActionResult> UpdateTurno([FromBody] TurnoCreateUpdateDTO turno, [FromRoute] int id)
         {
-            var turnoToEntity = turno.ToEntity();
-            var updateTurno = await _turnoService.Update(id, turnoToEntity);
+            var updateTurno = await _turnoService.Update(id, turno);
             if (!updateTurno.IsValid)
             {
                 return BadRequest(updateTurno.Errors);

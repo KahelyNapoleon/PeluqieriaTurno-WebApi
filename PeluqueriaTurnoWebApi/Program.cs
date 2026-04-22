@@ -41,11 +41,14 @@ builder.Services.AddSwaggerGen();
 //FLUENTVALIDATION INYECTIONS
 builder.Services.AddValidation();
 
-//REPOSITORIES Services
+//REPOSITORIES
 builder.Services.AddRepositoriesOfDAL();
 
-//SERVICES INYECTIONS 
+//SERVICES
 builder.Services.AddServicesOfBLL();
+
+//MAPPING 
+builder.Services.AddMappingOfBLL();
 
 //Authentication Manner - JWTBearer
 builder.Services.AddAuthentication(options =>

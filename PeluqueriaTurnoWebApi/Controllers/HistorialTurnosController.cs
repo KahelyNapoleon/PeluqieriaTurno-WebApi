@@ -1,7 +1,6 @@
 ﻿using BLL.Services.Interfaces;
+using Contracts.DTOs.HistorialTurnoDTOs;
 using Microsoft.AspNetCore.Mvc;
-using PeluqueriaTurnoWebApi.DTOs.HistorialTurnoDTOs;
-using PeluqueriaTurnoWebApi.Mappings;
 
 
 namespace PeluqueriaTurnoWebApi.Controllers
@@ -26,9 +25,7 @@ namespace PeluqueriaTurnoWebApi.Controllers
                 return BadRequest(historialTurnos.Data);
             }
 
-            var historialTurnosDto = historialTurnos.Data!.Select(h => h!.ToDto());
-
-            return Ok(historialTurnosDto);
+            return Ok(historialTurnos);
         }
 
         [HttpGet("{id:int}")]
@@ -40,17 +37,13 @@ namespace PeluqueriaTurnoWebApi.Controllers
                 return NotFound(historialTurno.Errors);
             }
 
-            var historialTurnoDto = historialTurno.Data!.ToDto();
-
-            return Ok(historialTurnoDto);
+            return Ok(historialTurno);
         }
 
         [HttpPost]
         public async Task<ActionResult> CreateHistorialTurno([FromBody] HistorialTurnoCreateUpdateDTO historialTurnoDto)
         {
-            var historialTurno = historialTurnoDto.ToEntity();
-
-            var crearHistorialTurno = await _historialTurnoService.Add(historialTurno);
+            var crearHistorialTurno = await _historialTurnoService.Add(historialTurnoDto);
             if (!crearHistorialTurno.IsValid)
             {
                 return BadRequest(crearHistorialTurno.Errors);
@@ -63,8 +56,8 @@ namespace PeluqueriaTurnoWebApi.Controllers
         [HttpPut("{id:int}")]
         public async Task<ActionResult> UpdateHistorialTurno([FromBody]HistorialTurnoCreateUpdateDTO historialTurnoDTO, [FromRoute] int id)
         {
-            var historialTurno = historialTurnoDTO.ToEntity();
-            var actualizarHistorialTurno = await _historialTurnoService.Update(id,historialTurno);
+           
+            var actualizarHistorialTurno = await _historialTurnoService.Update(id,historialTurnoDTO);
             if (!actualizarHistorialTurno.IsValid)
             {
                 return BadRequest(actualizarHistorialTurno.Data);

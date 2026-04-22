@@ -74,17 +74,17 @@ namespace BLL.Services
             return Result<string>.Succes("Registro eliminado");
         }
 
-        public virtual async Task<Result<IEnumerable<TReadDTO>>> GetAll()
+        public virtual async Task<Result<IEnumerable<TReadDTO?>>> GetAll()
         {
             var entities = await _repository.GetAll();
             if (!entities.Any())
             {
-                return Result<IEnumerable<TReadDTO>>.Fail("Aun no hay registros.");
+                return Result<IEnumerable<TReadDTO?>>.Fail("Aun no hay registros.");
             }
 
             var entitiesDto = entities.Select(e => _mapper.ToReadDTO(e!));
 
-            return Result<IEnumerable<TReadDTO>>.Succes(entitiesDto);
+            return Result<IEnumerable<TReadDTO?>>.Succes(entitiesDto);
         }
 
         public virtual async Task<Result<TReadDTO>> GetById(int id)

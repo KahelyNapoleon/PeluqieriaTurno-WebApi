@@ -1,4 +1,13 @@
 ﻿using BLL.Validations;
+using Contracts.DTOs.ClienteDTOs;
+using Contracts.DTOs.EstadoTurnoDTOs;
+using Contracts.DTOs.HistorialTurnoDTOs;
+using Contracts.DTOs.MetodoPagoDTOs;
+using Contracts.DTOs.PagoDTOs;
+using Contracts.DTOs.ServicioDTOs;
+using Contracts.DTOs.TipoServicioDTOs;
+using Contracts.DTOs.TurnoDTOs;
+using Contracts.DTOs.TurnoServicioDTOs;
 using DomainLayer.Models;
 using FluentValidation;
 
@@ -8,15 +17,15 @@ namespace PeluqueriaTurnoWebApi.Configuration.ContainerGroupRegistration
     {
         public static IServiceCollection AddValidation(this IServiceCollection services)
         {
-            services.AddScoped<IValidator<Cliente>, ClienteValidator>();
-            services.AddScoped<IValidator<EstadoTurno>, EstadoTurnoValidator>();
-            services.AddScoped<IValidator<HistorialTurno>, HistorialTurnoValidator>();
-            services.AddScoped<IValidator<MetodoPago>, MetodoPagoValidator>();
-            services.AddScoped<IValidator<Pago>, PagoValidator>();
-            services.AddScoped<IValidator<Servicio>, ServicioValidator>();
-            services.AddScoped<IValidator<TipoServicio>, TipoServicioValidator>();
-            services.AddScoped<IValidator<TurnoServicio>, TurnoServicioValidator>();
-            services.AddScoped<IValidator<Turno>, TurnoValidator>();
+            services.AddScoped<IValidator<ClienteCreateUpdateDTO>, ClienteValidator>();
+            services.AddScoped<IValidator<EstadoTurnoCreateUpdateDTO>, EstadoTurnoValidator>();
+            services.AddScoped<IValidator<HistorialTurnoCreateUpdateDTO>, HistorialTurnoValidator>();
+            services.AddScoped<IValidator<MetodoPagoCreateUpdateDTO>, MetodoPagoValidator>();
+            services.AddScoped<IValidator<PagoCreateUpdateDTO>, PagoValidator>();
+            services.AddScoped<IValidator<ServicioCreateUpdateDTO>, ServicioValidator>();
+            services.AddScoped<IValidator<TipoServicioCreateUpdateDTO>, TipoServicioValidator>();
+            services.AddScoped<IValidator<TurnoServicioCreateUpdateDTO>, TurnoServicioValidator>();
+            services.AddScoped<IValidator<TurnoCreateUpdateDTO>, TurnoValidator>();
 
             return services;
         }

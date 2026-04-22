@@ -1,7 +1,6 @@
 ﻿using BLL.Services.Interfaces;
+using Contracts.DTOs.TipoServicioDTOs;
 using Microsoft.AspNetCore.Mvc;
-using PeluqueriaTurnoWebApi.DTOs.TipoServicioDTOs;
-using PeluqueriaTurnoWebApi.Mappings;
 
 namespace PeluqueriaTurnoWebApi.Controllers
 {
@@ -25,8 +24,7 @@ namespace PeluqueriaTurnoWebApi.Controllers
                 return BadRequest(tipoServicios.Errors);
             }
 
-            var tipoServiciosDto = tipoServicios.Data!.Select(t => t!.ToReadDto());
-            return Ok(tipoServiciosDto);
+            return Ok(tipoServicios);
         }
 
         [HttpGet("{id:int}")]
@@ -38,15 +36,13 @@ namespace PeluqueriaTurnoWebApi.Controllers
                 return NotFound(tipoServicio.Errors);
             }
 
-            var tipoServicioDto = tipoServicio.Data!.ToReadDto();
-            return Ok(tipoServicioDto);
+            return Ok(tipoServicio);
         }
 
         [HttpPost]
         public async Task<ActionResult> GetTipoServicio([FromBody] TipoServicioCreateUpdateDTO tipoServicioDto)
         {
-            var tipoServicioToEntity = tipoServicioDto.ToEntity();
-            var crearTipoServicio = await _tipoServicio.Add(tipoServicioToEntity);
+            var crearTipoServicio = await _tipoServicio.Add(tipoServicioDto);
             if (!crearTipoServicio.IsValid)
             {
                 return BadRequest(crearTipoServicio.Errors);
@@ -58,8 +54,7 @@ namespace PeluqueriaTurnoWebApi.Controllers
         [HttpPut("{id:int}")]
         public async Task<ActionResult> UpdateTipoServicio([FromBody] TipoServicioCreateUpdateDTO tipoServicioDto, [FromRoute]int id)
         {
-            var tipoServicioToEntity = tipoServicioDto.ToEntity();
-            var actualizarTipoServicio = await _tipoServicio.Update(id,tipoServicioToEntity);
+            var actualizarTipoServicio = await _tipoServicio.Update(id,tipoServicioDto);
             if (!actualizarTipoServicio.IsValid)
             {
                 return BadRequest(actualizarTipoServicio.Errors);

@@ -11,7 +11,7 @@ namespace BLL.Services.Interfaces
 {
     public interface IGenericService<Entity, TReadDTO, TCreateUpdateDTO> where Entity : class
     {
-        Task<Result<IEnumerable<TReadDTO>>> GetAll();
+        Task<Result<IEnumerable<TReadDTO?>>> GetAll();
         Task<Result<TReadDTO>> GetById(int id);
         Task<Result<TReadDTO>> Add(TCreateUpdateDTO entity);
         Task<Result<TReadDTO>> Update(int id, TCreateUpdateDTO entity);

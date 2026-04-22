@@ -28,7 +28,7 @@ namespace BLL.Services
         public TurnoService(IUnitOfWork unitOfWork,
             IValidator<TurnoCreateUpdateDTO> validatorTurno,
             IValidator<HistorialTurnoCreateUpdateDTO> validatorHistorialTurno,
-            IMappingService<Turno, TurnoReadDTO, TurnoCreateUpdateDTO> mapper
+            IMappingService<Turno, TurnoReadDTO, TurnoCreateUpdateDTO> mapper,
             IMappingService<HistorialTurno, HistorialTurnoReadDTO, HistorialTurnoCreateUpdateDTO> mapperHistorialTurno
             )
         {
@@ -44,10 +44,10 @@ namespace BLL.Services
             var result = await _unitOfWork.TurnoRepository.GetPaged(pageNumber, pageSize);
             if (!result.Any())
             {
-                return Result<IEnumerable<Turno?>>.Fail("Aun no hay registros de turnos.");
+                return Result<IEnumerable<TurnoReadDTO?>>.Fail("Aun no hay registros de turnos.");
             }
 
-            var turnosDTO = result.Select(t => _mapper.ToReadDTO(t));
+            var turnosDTO = result.Select(t => _mapper.ToReadDTO(t!));
 
             return Result<IEnumerable<TurnoReadDTO?>>.Succes(turnosDTO);
         }
@@ -94,6 +94,7 @@ namespace BLL.Services
                 return Result<TurnoReadDTO>.Fail(errors);
             }
             
+            //ENTIDAD PARA PASAR A PARAMETRO DE REPOSITORIO.
             var turnoToEntity = _mapper.ToEntity(turno);
 
             await _unitOfWork.TurnoRepository.Add(turnoToEntity);
@@ -114,10 +115,11 @@ namespace BLL.Services
             var validarHistorialTurno = await _validatorHistorialTurno.ValidateAsync(inicioHistorialTurno);
             if (!validarHistorialTurno.IsValid)
             {
-                var errors = string.Concat("; ", validarHistorialTurno.Errors.Select(e => _mapper.ToReadDTO(e)));
+                var errors = string.Concat("; ", validarHistorialTurno.Errors.Select(e => e));
                 return Result<TurnoReadDTO>.Fail(errors);
             }
 
+            //MAPEO DE HISTORIALTURNO A ENTITY PARA PASAR A PARAMETRO DE REPOSITORIO 
             var historialTurnoToEntity = _mapperHistorialTurno.ToEntity(inicioHistorialTurno);
 
             await _unitOfWork.HistorialTurnoRepository.Add(historialTurnoToEntity);
@@ -125,29 +127,37 @@ namespace BLL.Services
 
             await _unitOfWork.CommitAsync();
 
-            return Result<TurnoReadDTO>.Succes(turno);
+
+            var turnoDto = _mapper.ToReadDTO(turnoToEntity);
+
+            return Result<TurnoReadDTO>.Succes(turnoDto);
 
         }
 
-        public async Task<Result<Turno>> Update(int id, Turno turno)
+        public async Task<Result<TurnoReadDTO>> Update(int id, TurnoCreateUpdateDTO turno)
         {
+            if (turno == null) throw new ArgumentNullException("Los campos de Turno deben completarse.");
+
             await _unitOfWork.BeginTransactionAsync();
 
             //Recuperar los datos del turno antes de actualizar.
             var turnoAnterior = await _unitOfWork.TurnoRepository.GetById(id);
             if (turnoAnterior == null)
             {
-                return Result<Turno>.Fail($"No existe registro con id {id}");
+                return Result<TurnoReadDTO>.Fail($"No existe registro con id {id}");
             }
 
             var validarTurno = await _validatorTurno.ValidateAsync(turno);
             if (!validarTurno.IsValid)
             {
-                return Result<Turno>.Fail($"Error de validacion, {validarTurno.Errors}");
+                var errors = string.Concat("; ", validarTurno.Errors.Select(e => e));
+                return Result<TurnoReadDTO>.Fail(errors);
             }
 
+            //Mapeo de turno
+            var turnoUpdate = _mapper.ToEntity(turno);
             //Actualizar Turno
-            await _unitOfWork.TurnoRepository.Update(id, turno);
+            await _unitOfWork.TurnoRepository.Update(id, turnoUpdate);
             await _unitOfWork.SaveChangeAsync();
 
             //Agregar nuevo HistorialTurno de turno.
@@ -155,18 +165,17 @@ namespace BLL.Services
             //Registros Anteriores y Registros Actuales: EstadoTurno, FechaHora
             //         
             var fechaHoraAnterior = new DateTimeOffset(turnoAnterior.FechaTurno, turnoAnterior.HoraTurno, new TimeSpan(-3));
-            var fechaHoraActual = new DateTimeOffset(turno.FechaTurno, turno.HoraTurno, new TimeSpan(-3));
+            var fechaHoraActual = new DateTimeOffset(turnoUpdate.FechaTurno, turnoUpdate.HoraTurno, new TimeSpan(-3));
             var estadoTurnoAnterior = turnoAnterior.EstadoTurnoId;
-            var estadoTurnoActual = turno.EstadoTurnoId;
+            var estadoTurnoActual = turnoUpdate.EstadoTurnoId;
 
             var historialTurno = new HistorialTurno
             {
-                TurnoId = turno.TurnoId,
+                TurnoId = turnoUpdate.TurnoId,
                 FechaHoraAnterior = fechaHoraAnterior,
                 FechaHoraActual = fechaHoraActual,
                 EstadoTurnoAnterior = estadoTurnoAnterior,
                 EstadoTurnoActual = estadoTurnoActual
-
             };
 
             //Agregar nuevo registro de historial turno.
@@ -175,7 +184,8 @@ namespace BLL.Services
 
             await _unitOfWork.CommitAsync();
 
-            return Result<Turno>.Succes(turno);
+            var turnoReadDTO = _mapper.ToReadDTO(turnoUpdate);
+            return Result<TurnoReadDTO>.Succes(turnoReadDTO);
         }
 
         public async Task<Result<string>> Delete(int id)

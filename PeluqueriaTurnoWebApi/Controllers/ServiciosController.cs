@@ -1,7 +1,6 @@
 ﻿using BLL.Services.Interfaces;
+using Contracts.DTOs.ServicioDTOs;
 using Microsoft.AspNetCore.Mvc;
-using PeluqueriaTurnoWebApi.DTOs.ServicioDTOs;
-using PeluqueriaTurnoWebApi.Mappings;
 
 namespace PeluqueriaTurnoWebApi.Controllers
 {
@@ -25,8 +24,7 @@ namespace PeluqueriaTurnoWebApi.Controllers
                 return BadRequest(servicios.Errors);
             }
 
-            var serviciosDto = servicios.Data!.Select(s => s!.ToReadDto());
-            return Ok(serviciosDto);
+            return Ok(servicios);
 
         }
 
@@ -39,15 +37,13 @@ namespace PeluqueriaTurnoWebApi.Controllers
                 return NotFound(servicio.Errors);
             }
 
-            var servicioDto = servicio.Data!.ToReadDto();
-            return Ok(servicioDto);
+            return Ok(servicio);
         }
 
         [HttpPost]
         public async Task<ActionResult<ServicioReadDTO>> CreateServicio([FromBody] ServicioCreateUpdateDTO servicioDto)
         {
-            var servicioEntity = servicioDto.ToEntity();
-            var createServicio = await _servicioService.Add(servicioEntity);
+            var createServicio = await _servicioService.Add(servicioDto);
             if (!createServicio.IsValid)
             {
                 return BadRequest(createServicio.Errors);
@@ -60,8 +56,7 @@ namespace PeluqueriaTurnoWebApi.Controllers
         [HttpPut("{id:int}")]
         public async Task<ActionResult> UpdateServicio([FromBody] ServicioCreateUpdateDTO servicioDto, [FromRoute] int id)
         {
-            var servicioToEntity = servicioDto.ToEntity();
-            var actualizarServicio = await _servicioService.Update(id, servicioToEntity);
+            var actualizarServicio = await _servicioService.Update(id, servicioDto);
             if (!actualizarServicio.IsValid)
             {
                 return BadRequest(actualizarServicio.Errors);

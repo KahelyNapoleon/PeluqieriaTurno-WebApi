@@ -1,7 +1,6 @@
 ﻿using BLL.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using PeluqueriaTurnoWebApi.DTOs.TurnoServicioDTOs;
-using PeluqueriaTurnoWebApi.Mappings;
+using Contracts.DTOs.TurnoServicioDTOs;
 
 namespace PeluqueriaTurnoWebApi.Controllers
 {
@@ -25,8 +24,8 @@ namespace PeluqueriaTurnoWebApi.Controllers
                 return BadRequest(turnoServicios.Errors);
             }
 
-            var turnoServiciosDtos = turnoServicios.Data!.Select(t => t!.ToReadDto());
-            return Ok(turnoServiciosDtos);
+      
+            return Ok(turnoServicios);
         }
 
 
@@ -39,16 +38,14 @@ namespace PeluqueriaTurnoWebApi.Controllers
                 return NotFound(turnoServicios.Errors);
             }
 
-            var turnoServicioDto = turnoServicios.Data!.ToReadDto();
-            return Ok(turnoServicioDto);
+            return Ok(turnoServicios);
         }
 
 
         [HttpPost]
-        public async Task<ActionResult<TurnoServicioReadDTO>> CreateTurnoServicio([FromBody] TurnoServicioCreateDTO turnoServicioDto)
+        public async Task<ActionResult<TurnoServicioReadDTO>> CreateTurnoServicio([FromBody] TurnoServicioCreateUpdateDTO turnoServicioDto)
         {
-            var turnoServicioToEntity = turnoServicioDto.ToCreateEntity();
-            var createTurnoServicio = await _turnoServicioService.Add(turnoServicioToEntity);
+            var createTurnoServicio = await _turnoServicioService.Add(turnoServicioDto);
             if (!createTurnoServicio.IsValid)
             {
                 return BadRequest(createTurnoServicio.Errors);
@@ -58,10 +55,9 @@ namespace PeluqueriaTurnoWebApi.Controllers
         }
 
         [HttpPut("{id:int}")]
-        public async Task<ActionResult> UpdateTurnoServicio([FromBody] TurnoServicioUpdateDTO turnoServicioDto, [FromRoute] int id)
+        public async Task<ActionResult> UpdateTurnoServicio([FromBody] TurnoServicioCreateUpdateDTO turnoServicioDto, [FromRoute] int id)
         {
-            var turnoServicioToEntity = turnoServicioDto.ToUpdateEntity();
-            var updateTurnoServicio = await _turnoServicioService.Update(id,turnoServicioToEntity);
+            var updateTurnoServicio = await _turnoServicioService.Update(id,turnoServicioDto);
             if (!updateTurnoServicio.IsValid)
             {
                 return BadRequest(updateTurnoServicio.Errors);
