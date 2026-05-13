@@ -14,8 +14,8 @@ namespace BLL.Services
 {
     public class GenericService<Entity, TReadDTO, TCreateUpdateDTO>
         : IGenericService<Entity, TReadDTO, TCreateUpdateDTO> where Entity : class
-                                                                                                                          where TReadDTO : class
-                                                                                                                          where TCreateUpdateDTO : class                                 
+                                                              where TReadDTO : class
+                                                              where TCreateUpdateDTO : class
     {
         private readonly IGenericRepository<Entity> _repository;
         private readonly IValidator<TCreateUpdateDTO> _validator;
@@ -29,8 +29,8 @@ namespace BLL.Services
             _mapper = mapper;
         }
 
-        
-      
+
+
 
         public virtual async Task<Result<TReadDTO>> Add(TCreateUpdateDTO entityDto)
         {
@@ -120,12 +120,12 @@ namespace BLL.Services
 
             //Realizo la conversion del valor de entrada entity que actualizar a los valores reales
             //Para luego poder ejecutar el metodo del repositorio de Update(id, entity)
-            var toEntity =  _mapper.ToEntity(entity);
+            var toEntity = _mapper.ToEntity(entity);
 
             await _repository.Update(id, toEntity);
 
             var entityUpdate = await _repository.GetById(id);
-            if(entityUpdate == null)
+            if (entityUpdate == null)
             {
                 return Result<TReadDTO>.Fail("Error al recuperar el registro");
             }

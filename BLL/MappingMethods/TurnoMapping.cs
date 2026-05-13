@@ -16,6 +16,7 @@ namespace BLL.MappingMethods
                 HoraTurno = t.HoraTurno,
                 ClienteId = t.ClienteId,
                 EstadoTurno = t.EstadoTurno.Descripcion
+
             };
         }
 

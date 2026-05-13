@@ -27,6 +27,9 @@ namespace DAL.UnitOfWork.IUnitOfWork
         private IHistorialTurnoRepository _historialTurnoRepository;
         public IHistorialTurnoRepository HistorialTurnoRepository => _historialTurnoRepository ??= new HistorialTurnoRepository(_dbContext);
 
+        private ITurnoServicioRepository _turnoServicioRepository;
+        public ITurnoServicioRepository TurnoServicioRepository => _turnoServicioRepository ??= new TurnoServicioRepository(_dbContext);
+
 
         public async Task BeginTransactionAsync()
         {

@@ -51,5 +51,30 @@ namespace DAL.Repositorios
             return await query.FirstOrDefaultAsync(t => t.TurnoId == id);
         }
 
+        public override async Task<IEnumerable<Turno?>> GetAll()
+        {
+            var query = _dbContext.Turnos
+                .AsNoTracking()
+                .Include(t => t.EstadoTurno);
+
+            return await query.ToListAsync();
+                
+        }
+
+        //METODO PARA LOGICA DE NEGOCIO
+        public async Task<Turno?> GetTurnoDisponible()
+        {
+            var query = _dbContext.Turnos
+                .AsNoTracking()
+                .Include(t => t.EstadoTurno)
+                .Where(t => t.EstadoTurno.Descripcion == "Disponible")
+                .OrderBy(t => t.FechaTurno);
+
+            return await query.FirstOrDefaultAsync();
+        }
+
+
+      
+        
     }
 }

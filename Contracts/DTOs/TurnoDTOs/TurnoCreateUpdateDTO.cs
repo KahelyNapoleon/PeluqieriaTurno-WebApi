@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Contracts.DTOs.ServicioDTOs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,5 +18,7 @@ namespace Contracts.DTOs.TurnoDTOs
         public TimeOnly HoraTurno { get; set; }
 
         public DateOnly FechaTurno { get; set; }
+
+        public ICollection<ServicioReadDTO> Servicios { get; set; } = null!; //CAMPO PARA GENERAR LOS REGISTROS DE TURNOSERVICIO
     }
 }

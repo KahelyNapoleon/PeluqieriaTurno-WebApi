@@ -13,6 +13,8 @@ namespace DAL.UnitOfWork.IUnitOfWork
 
         IHistorialTurnoRepository HistorialTurnoRepository { get; }
 
+        ITurnoServicioRepository TurnoServicioRepository { get; }
+
         Task BeginTransactionAsync();
         Task SaveChangeAsync();
         Task CommitAsync();

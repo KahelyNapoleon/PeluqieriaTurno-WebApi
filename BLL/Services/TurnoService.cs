@@ -13,30 +13,38 @@ using System.Threading.Tasks;
 using Contracts.DTOs.TurnoDTOs;
 using Contracts.DTOs.HistorialTurnoDTOs;
 using BLL.Mapping;
+using Contracts.DTOs.TurnoServicioDTOs;
+using System.Reflection.PortableExecutable;
 
 namespace BLL.Services
 {
     public class TurnoService : ITurnoService
     {
-     
+
         private readonly IUnitOfWork _unitOfWork;
         private readonly IValidator<TurnoCreateUpdateDTO> _validatorTurno;
         private readonly IValidator<HistorialTurnoCreateUpdateDTO> _validatorHistorialTurno;
-        private IMappingService<Turno, TurnoReadDTO, TurnoCreateUpdateDTO> _mapper;
+        private readonly IValidator<TurnoServicioCreateUpdateDTO> _validatorTurnoServicio;
+        private IMappingService<Turno, TurnoReadDTO, TurnoCreateUpdateDTO> _mapperTurno;
         private IMappingService<HistorialTurno, HistorialTurnoReadDTO, HistorialTurnoCreateUpdateDTO> _mapperHistorialTurno;
+        private IMappingService<TurnoServicio, TurnoServicioReadDTO, TurnoServicioCreateUpdateDTO> _mapperTurnoServicio;
 
         public TurnoService(IUnitOfWork unitOfWork,
             IValidator<TurnoCreateUpdateDTO> validatorTurno,
             IValidator<HistorialTurnoCreateUpdateDTO> validatorHistorialTurno,
-            IMappingService<Turno, TurnoReadDTO, TurnoCreateUpdateDTO> mapper,
-            IMappingService<HistorialTurno, HistorialTurnoReadDTO, HistorialTurnoCreateUpdateDTO> mapperHistorialTurno
+            IValidator<TurnoServicioCreateUpdateDTO> validatorTurnoServicio,
+            IMappingService<Turno, TurnoReadDTO, TurnoCreateUpdateDTO> mapperTurno,
+            IMappingService<HistorialTurno, HistorialTurnoReadDTO, HistorialTurnoCreateUpdateDTO> mapperHistorialTurno,
+            IMappingService<TurnoServicio, TurnoServicioReadDTO, TurnoServicioCreateUpdateDTO> mapperTurnoServicio
             )
         {
             _unitOfWork = unitOfWork;
             _validatorTurno = validatorTurno;
             _validatorHistorialTurno = validatorHistorialTurno;
-            _mapper = mapper;
+            _validatorTurnoServicio = validatorTurnoServicio;
+            _mapperTurno = mapperTurno;
             _mapperHistorialTurno = mapperHistorialTurno;
+            _mapperTurnoServicio = mapperTurnoServicio;
         }
 
         public async Task<Result<IEnumerable<TurnoReadDTO?>>> GetPaged(int pageNumber, int pageSize)
@@ -47,7 +55,7 @@ namespace BLL.Services
                 return Result<IEnumerable<TurnoReadDTO?>>.Fail("Aun no hay registros de turnos.");
             }
 
-            var turnosDTO = result.Select(t => _mapper.ToReadDTO(t!));
+            var turnosDTO = result.Select(t => _mapperTurno.ToReadDTO(t!));
 
             return Result<IEnumerable<TurnoReadDTO?>>.Succes(turnosDTO);
         }
@@ -62,7 +70,7 @@ namespace BLL.Services
                 return Result<IEnumerable<TurnoReadDTO?>>.Fail("Error, aun no hay registros de Turnos");
             }
 
-            var turnosDTO = turnos.Select(t => _mapper.ToReadDTO(t!));
+            var turnosDTO = turnos.Select(t => _mapperTurno.ToReadDTO(t!));
 
             return Result<IEnumerable<TurnoReadDTO?>>.Succes(turnosDTO);
         }
@@ -75,27 +83,28 @@ namespace BLL.Services
                 return Result<TurnoReadDTO>.Fail($"No existe registro con id {id}");
             }
 
-            var turnoDTO = _mapper.ToReadDTO(turno);
+            var turnoDTO = _mapperTurno.ToReadDTO(turno);
 
             return Result<TurnoReadDTO>.Succes(turnoDTO);
         }
 
         public async Task<Result<TurnoReadDTO>> Add(TurnoCreateUpdateDTO turno)
         {
-            if (turno == null) throw new ArgumentNullException("El registro de turno debe completarse.");
+            //if (turno == null) throw new ArgumentNullException("El registro de turno debe completarse.");
 
             await _unitOfWork.BeginTransactionAsync();
+
 
             var validarturno = await _validatorTurno.ValidateAsync(turno);
 
             if (!validarturno.IsValid)
             {
-                var errors = string.Concat("; ", validarturno.Errors.Select(e => e)); 
+                var errors = string.Concat("; ", validarturno.Errors.Select(e => e));
                 return Result<TurnoReadDTO>.Fail(errors);
             }
-            
+
             //ENTIDAD PARA PASAR A PARAMETRO DE REPOSITORIO.
-            var turnoToEntity = _mapper.ToEntity(turno);
+            var turnoToEntity = _mapperTurno.ToEntity(turno);
 
             await _unitOfWork.TurnoRepository.Add(turnoToEntity);
             await _unitOfWork.SaveChangeAsync();
@@ -125,15 +134,42 @@ namespace BLL.Services
             await _unitOfWork.HistorialTurnoRepository.Add(historialTurnoToEntity);
             await _unitOfWork.SaveChangeAsync();
 
+
+            //BLOQUE AGREGAR SERVICIOS A TABLA TurnoServicio
+            //Crear Registros de los Servicios del turno
+            //EN OBSERVACION
+            var servicios = turno.Servicios;
+            foreach (var servicio in servicios)
+            {
+                var agregarServicio = new TurnoServicioCreateUpdateDTO
+                {
+                    TurnoId = turnoToEntity.TurnoId,
+                    ServicioId = servicio.ServicioId,
+                    MontoAplicado = servicio.Precio,
+                    TiempoAplicado = servicio.Duracion
+                };
+
+                //mapear turno servicio a Entity para poder ingresarlo al parametro de repositorio.
+                var agregarServicioEntity = _mapperTurnoServicio.ToEntity(agregarServicio);
+
+                await _unitOfWork.TurnoServicioRepository.Add(agregarServicioEntity);
+
+                await _unitOfWork.SaveChangeAsync();
+            }
+
+
             await _unitOfWork.CommitAsync();
 
 
-            var turnoDto = _mapper.ToReadDTO(turnoToEntity);
+            var turnoDto = _mapperTurno.ToReadDTO(turnoToEntity);
 
             return Result<TurnoReadDTO>.Succes(turnoDto);
 
         }
 
+
+        //sI LO QUE QUIERO CONSEGUIR ES CAMBIAR EL ESTADO DEL TURNO, EL NOMBRE Y LA IMPLEMENTACION DEL METODO
+        //DEBEN CAMBIAR Y SER DIFERENTE COMO UpdateEstadoTurno y recibir como parametro el estado del Turno actualizado.
         public async Task<Result<TurnoReadDTO>> Update(int id, TurnoCreateUpdateDTO turno)
         {
             if (turno == null) throw new ArgumentNullException("Los campos de Turno deben completarse.");
@@ -155,7 +191,7 @@ namespace BLL.Services
             }
 
             //Mapeo de turno
-            var turnoUpdate = _mapper.ToEntity(turno);
+            var turnoUpdate = _mapperTurno.ToEntity(turno);
             //Actualizar Turno
             await _unitOfWork.TurnoRepository.Update(id, turnoUpdate);
             await _unitOfWork.SaveChangeAsync();
@@ -182,9 +218,13 @@ namespace BLL.Services
             await _unitOfWork.HistorialTurnoRepository.Add(historialTurno);
             await _unitOfWork.SaveChangeAsync();
 
+            //Actualizacion de Servicio o servicios | Agregar, Quitar, Cambiar(Quitar,Agregar)
+            var turnoServicioId = await _unitOfWork.TurnoServicioRepository.GetById(turno.);
+
+
             await _unitOfWork.CommitAsync();
 
-            var turnoReadDTO = _mapper.ToReadDTO(turnoUpdate);
+            var turnoReadDTO = _mapperTurno.ToReadDTO(turnoUpdate);
             return Result<TurnoReadDTO>.Succes(turnoReadDTO);
         }
 
