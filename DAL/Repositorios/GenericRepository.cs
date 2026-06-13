@@ -31,8 +31,17 @@ namespace DAL.Repositorios
 
         public virtual async Task<IEnumerable<T?>> GetAll()
         {
-            var entities = await _dbSet.ToListAsync();
-            return entities;
+            try
+            {
+                var entities = await _dbSet.ToListAsync();
+                return entities;
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine(ex.InnerException!.ToString());
+                throw;
+            }
+            
         }
 
         public virtual async Task<T?> GetById(int id)

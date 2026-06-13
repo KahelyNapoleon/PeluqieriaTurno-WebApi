@@ -35,6 +35,7 @@ namespace BLL.MappingMethods
         {
             return new ClienteReadDTO
             {
+                ClienteId = c.ClienteId,
                 Nombre = c.Nombre,
                 Apellido = c.Apellido,
                 NroCelular = c.NroCelular,

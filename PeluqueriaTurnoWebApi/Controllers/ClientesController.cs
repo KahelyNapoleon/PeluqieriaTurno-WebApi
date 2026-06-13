@@ -38,7 +38,7 @@ namespace PeluqueriaTurnoWebApi.Controllers
             var cliente = await _clienteService.GetById(id);
             if(!cliente.IsValid)
             {
-                return BadRequest(cliente.Errors);
+                return NotFound(cliente.Errors);
             }
 
             return Ok(cliente);

@@ -24,6 +24,11 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 options.UseSqlServer(
     builder.Configuration.GetConnectionString("DefaultConnection")));
 
+//MonsterDb NO ACEPTA CONEXIONES REMOTAS LOCALES, SOLO SE EJECUTA EN EL MISMO HOST.
+//builder.Services.AddDbContext<ApplicationDbContext>(options =>
+//options.UseSqlServer(
+//    builder.Configuration.GetConnectionString("MonsterDBSql")));
+
 //Identity
 builder.Services.AddIdentity<AppUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
