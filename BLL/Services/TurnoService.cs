@@ -217,7 +217,7 @@ namespace BLL.Services
 
             //Acciones:
             //Agrega nuevo HistorialTurno de turno.
-            //Registro que se conserva para el nuevo registor: Turno.
+            //Registro que se conserva para el nuevo registro: Turno.
             //Registros Anteriores y Registros Actuales: EstadoTurno, FechaHora
             //         
             var fechaHoraActual = new DateTimeOffset(turnoActual.FechaTurno, turnoActual.HoraTurno, new TimeSpan(-3));
@@ -247,15 +247,19 @@ namespace BLL.Services
             var serviciosActualizado = turnoActualizado.Servicios.Select(s => s.ServicioId);
 
             var serviciosAgregar = serviciosActualizado.Except(serviciosActuales).ToList();
-            var serviciosEliminar = serviciosActuales.Except(serviciosActualizado).ToList();
+            var serviciosEliminar = serviciosActuales.Except(serviciosActualizado).ToList();//Si esto es asi entonces serviciosActualizados contiene los servicio
+                                                                                            //que ya existian o serviciosActuales
 
-            //Busca en los registros de TurnoServicio relacionados al TURNO
-            //aquellos registros con el id que corresponde a los servicios que se quieren eliminar
+            //Recuperar los registros de TurnoServicio, relacionados al TURNO
+            // con el id correspondiente a los servicios que se quieren eliminar
+            //ACLARACION: llamada a la variable 'turnoActualizadoEntity' porque es el turno actual en cuestion que se quiere modificar.
+            //ACLARACION: 'ts' -> turnoServicio.
             var eliminarRelaciones = turnoActualizadoEntity.TurnoServicios
                 .Where(ts => serviciosEliminar.Contains(ts.ServicioId))
                 .ToList();
 
-            //Aquellos ServicioId 's que coinciden con los nuevos servicios agregados.  
+            //Aquellos ServicioId's que coinciden con los nuevos servicios agregados.  
+            //ACLARACION: el origen de Datos es 'turnoActualizado' porque de ahi yacen los servicios actualizados del turno
             var agregarRelaciones = turnoActualizado.Servicios
                 .Where(s => serviciosAgregar.Contains(s.ServicioId))
                 .ToList();
@@ -293,6 +297,7 @@ namespace BLL.Services
             return Result<TurnoReadDTO>.Succes(turnoReadDTO);
         }
 
+        //Porque se eliminaria un Turno? porque se cancelo? entonces, debe estar ese lugar libre para otros?
         public async Task<Result<string>> Delete(int id)
         {
             var eliminarTurno = await _unitOfWork.TurnoRepository.GetById(id);
