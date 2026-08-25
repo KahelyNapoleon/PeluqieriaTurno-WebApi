@@ -13,5 +13,7 @@ namespace BLL.Services.Interfaces
     {
         //Cambiar la implemetnacion de este metodo en la clase correspondiente
         Task<Result<IEnumerable<TurnoReadDTO?>>> GetPaged(int pageNumber, int pageSize);
+
+        Task<Result<TurnoReadDTO>> Add(TurnoCreateUpdateDTO turno);
     }
 }

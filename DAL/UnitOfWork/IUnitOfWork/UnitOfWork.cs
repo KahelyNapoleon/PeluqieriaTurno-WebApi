@@ -30,6 +30,9 @@ namespace DAL.UnitOfWork.IUnitOfWork
         private ITurnoServicioRepository _turnoServicioRepository;
         public ITurnoServicioRepository TurnoServicioRepository => _turnoServicioRepository ??= new TurnoServicioRepository(_dbContext);
 
+        private IServicioRepository _servicioRepository;
+        public IServicioRepository ServicioRepository => _servicioRepository ?? new ServicioRepository(_dbContext);
+
 
         public async Task BeginTransactionAsync()
         {

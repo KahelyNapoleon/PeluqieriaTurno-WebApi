@@ -1,17 +1,10 @@
 using DAL.Data;
 using DAL.Identity;
-using FluentValidation;
-using BLL.Validations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using DomainLayer.Models;
-using DAL.Repositorios.Interfaces;
-using DAL.Repositorios;
-using BLL.Services.Interfaces;
-using BLL.Services;
 using PeluqueriaTurnoWebApi.Configuration.ContainerGroupRegistration;
 
 
@@ -84,6 +77,9 @@ builder.Services.AddAuthentication(options =>
     };
     
 });
+
+
+//Contenedor que gestiona los servicios.
 
 var app = builder.Build();
 

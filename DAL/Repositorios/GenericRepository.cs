@@ -38,8 +38,9 @@ namespace DAL.Repositorios
             }
             catch (SqlException ex)
             {
-                Console.WriteLine(ex.InnerException!.ToString());
-                throw;
+                var message = ex.InnerException!.Message;
+             
+                throw new ArgumentException(message);
             }
             
         }

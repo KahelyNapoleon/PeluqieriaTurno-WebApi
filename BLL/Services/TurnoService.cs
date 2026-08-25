@@ -75,6 +75,7 @@ namespace BLL.Services
             return Result<IEnumerable<TurnoReadDTO?>>.Succes(turnosDTO);
         }
 
+        //OBTENER POR ID
         public async Task<Result<TurnoReadDTO>> GetById(int id)
         {
             var turno = await _unitOfWork.TurnoRepository.GetById(id);
@@ -88,216 +89,257 @@ namespace BLL.Services
             return Result<TurnoReadDTO>.Succes(turnoDTO);
         }
 
-        public async Task<Result<TurnoReadDTO>> Add(TurnoCreateUpdateDTO turno)
+
+
+
+        //CREAR TURNO PARA EL CLIENTE       
+        //1-SE VALIDA EL TURNO
+        //A-SE MAPEA EL DTOCREATEUPDATE
+        //B-SE AGREGA EL REGISTRO DE TURNO A LA TABLA
+        //2-
+        public async Task<Result<TurnoReadDTO>> Add(TurnoCreateUpdateDTO turno) //Este metodo no esta reespaldado por la interfaz de IGenericService
         {
-            //if (turno == null) throw new ArgumentNullException("El registro de turno debe completarse.");
+            if (turno == null) throw new ArgumentNullException("El registro de turno debe completarse.");
+
+            var validarturno = await _validatorTurno.ValidateAsync(turno);
+            if (!validarturno.IsValid)
+            {
+                var errors = string.Join("; ", validarturno.Errors.Select(e => e.ErrorMessage));
+                return Result<TurnoReadDTO>.Fail(errors);
+            }
+
+            var servicios = new List<Servicio>();
+            foreach (var servicioId in turno.idsServicios)
+            {
+                var servicio = await _unitOfWork.ServicioRepository.GetById(servicioId);
+                if (servicio == null)
+                {
+                    return Result<TurnoReadDTO>.Fail($"El servicio con id {servicioId} no existe en los registros");
+                }
+                servicios.Add(servicio);
+            }
+
 
             await _unitOfWork.BeginTransactionAsync();
 
 
-            var validarturno = await _validatorTurno.ValidateAsync(turno);
+            try
+            { //------------------------------TURNO--------------------------------
+               
 
-            if (!validarturno.IsValid)
-            {
-                var errors = string.Concat("; ", validarturno.Errors.Select(e => e));
-                return Result<TurnoReadDTO>.Fail(errors);
-            }
+                var turnoToEntity = _mapperTurno.ToEntity(turno);
+                await _unitOfWork.TurnoRepository.Add(turnoToEntity);
 
-            //ENTIDAD PARA PASAR A PARAMETRO DE REPOSITORIO.
-            var turnoToEntity = _mapperTurno.ToEntity(turno);
+                //---------------------------FIN-TURNO-------------------------------
 
-            await _unitOfWork.TurnoRepository.Add(turnoToEntity);
-            await _unitOfWork.SaveChangeAsync();
-
-            //Por ser la primera vez que se crea el turno, el estado anterior corresponde al turno
-            // disponible.
-            int estadoTurnoDisponible = 0;
-            //inicia el historial
-            var inicioHistorialTurno = new HistorialTurnoCreateUpdateDTO
-            {
-                TurnoId = turnoToEntity.TurnoId,
-                FechaHoraAnterior = null,
-                FechaHoraActual = new DateTimeOffset(turnoToEntity.FechaTurno, turnoToEntity.HoraTurno, TimeSpan.FromHours(-3)),
-                EstadoTurnoAnterior = estadoTurnoDisponible,
-                EstadoTurnoActual = turnoToEntity.EstadoTurnoId,
-            };
-
-         
-            var validarHistorialTurno = await _validatorHistorialTurno.ValidateAsync(inicioHistorialTurno);
-            if (!validarHistorialTurno.IsValid)
-            {
-                var errors = string.Concat("; ", validarHistorialTurno.Errors.Select(e => e));
-                return Result<TurnoReadDTO>.Fail(errors);
-            }
-
-            //MAPEO DE HISTORIALTURNO A ENTITY PARA PASAR A PARAMETRO DE REPOSITORIO 
-            var historialTurnoToEntity = _mapperHistorialTurno.ToEntity(inicioHistorialTurno);
-
-            await _unitOfWork.HistorialTurnoRepository.Add(historialTurnoToEntity);
-            await _unitOfWork.SaveChangeAsync();
-
-
-            //BLOQUE AGREGAR SERVICIOS A TABLA TurnoServicio
-            //Crear Registros de los Servicios del turno
-            //EN OBSERVACION
-            var servicios = turno.Servicios;
-            foreach (var servicio in servicios)
-            {
-                var agregarServicioDTO = new TurnoServicioCreateUpdateDTO
+                //---------------------------HISTORIALTURNO-------------------------------
+                //Por ser la primera vez que se crea el turno, el estado anterior seria Turno DISPONIBLE            
+                int estadoTurnoDisponible = 0;
+                //Inicia el historial
+                var inicioHistorialTurno = new HistorialTurnoCreateUpdateDTO
                 {
                     TurnoId = turnoToEntity.TurnoId,
-                    ServicioId = servicio.ServicioId,
-                    MontoAplicado = servicio.Precio,
-                    TiempoAplicado = servicio.Duracion
+                    FechaHoraAnterior = null,
+                    FechaHoraActual = new DateTimeOffset(turnoToEntity.FechaTurno, turnoToEntity.HoraTurno, TimeSpan.FromHours(-3)),
+                    EstadoTurnoAnterior = estadoTurnoDisponible,
+                    EstadoTurnoActual = turnoToEntity.EstadoTurnoId,
                 };
 
-                //mapear turno servicio a Entity para poder ingresarlo al parametro de repositorio.
-                var agregarServicioEntity = _mapperTurnoServicio.ToEntity(agregarServicioDTO);
+                var validarHistorialTurno = await _validatorHistorialTurno.ValidateAsync(inicioHistorialTurno);
+                if (!validarHistorialTurno.IsValid)
+                {
+                    var errors = string.Join("; ", validarHistorialTurno.Errors.Select(e => e.ErrorMessage));
+                    return Result<TurnoReadDTO>.Fail(errors);
+                }
 
-                await _unitOfWork.TurnoServicioRepository.Add(agregarServicioEntity);
+                var historialTurnoToEntity = _mapperHistorialTurno.ToEntity(inicioHistorialTurno);
+
+                await _unitOfWork.HistorialTurnoRepository.Add(historialTurnoToEntity);
+
+                //---------------------------FIN-HISTORIALTURNO-------------------------------
+
+
+                //---------------------------TURNOSERVICIO-------------------------------
+                //BLOQUE AGREGAR SERVICIOS A TABLA TurnoServicio
+                //Crear Registros de los Servicios del turno
+                //EN OBSERVACION... ... ...
+               
+                foreach (var servicio in servicios)
+                {
+                    var agregarTurnoServicioDTO = new TurnoServicioCreateUpdateDTO
+                    {
+                        TurnoId = turnoToEntity.TurnoId,//Porque turnoToEntity?
+                        ServicioId = servicio.ServicioId,
+                        MontoAplicado = servicio.Precio,
+                        TiempoAplicado = servicio.Duracion
+                    };
+
+                    //mapear turno servicio a Entity para poder ingresarlo al parametro de repositorio.
+                    var servicioEntity = _mapperTurnoServicio.ToEntity(agregarTurnoServicioDTO);
+
+                    await _unitOfWork.TurnoServicioRepository.Add(servicioEntity);
+
+                 
+                }
+                //---------------------------FIN-TURNOSERVICIO-------------------------------
 
                 await _unitOfWork.SaveChangeAsync();
+
+                await _unitOfWork.CommitAsync();
+
+
+                var turnoDto = _mapperTurno.ToReadDTO(turnoToEntity);
+
+                return Result<TurnoReadDTO>.Succes(turnoDto);
             }
-
-
-            await _unitOfWork.CommitAsync();
-
-
-            var turnoDto = _mapperTurno.ToReadDTO(turnoToEntity);
-
-            return Result<TurnoReadDTO>.Succes(turnoDto);
+            catch(Exception ex)
+            {
+                await _unitOfWork.RollBackAsync();
+                return Result<TurnoReadDTO>.Fail($"Error al intentar crear el Turno {ex.Message}");
+            }
 
         }
 
 
 
+
+        //public async Task<Result<TurnoReadDTO>> UpdateSimpleDates(int id, DateTime nuevaFechaTurno, TimeOnly nuevaHoraTurno, string nuevoDetalle, int nuevoClienteId, int estadoTurnoId)
+        //{
+
+        //}
 
 
         //sI LO QUE QUIERO CONSEGUIR ES CAMBIAR EL ESTADO DEL TURNO, EL NOMBRE Y LA IMPLEMENTACION DEL METODO
         //DEBEN CAMBIAR Y SER DIFERENTE COMO UpdateEstadoTurno y recibir como parametro el estado del Turno actualizado.
-        public async Task<Result<TurnoReadDTO>> Update(int id, TurnoCreateUpdateDTO turnoActualizado)
-        {
-            if (turnoActualizado == null) throw new ArgumentNullException("Los campos de Turno deben completarse.");
+        //public async Task<Result<TurnoReadDTO>> Update(int id, TurnoCreateUpdateDTO turnoActualizado)
+        //{
+        //    if (turnoActualizado == null) throw new ArgumentNullException("Los campos de Turno deben completarse.");
 
 
-            await _unitOfWork.BeginTransactionAsync();
+        //    await _unitOfWork.BeginTransactionAsync();
 
-            //Recuperar los datos del turno antes de actualizar.
-            var turnoActual = await _unitOfWork.TurnoRepository.GetById(id);
-            if (turnoActual == null)
-            {
-                return Result<TurnoReadDTO>.Fail($"No existe registro con id {id}");
-            }
+        //    //RECUPERA EL REGISTRO DEL TURNO CON EL ID EN CUESTION
+        //    var turnoActual = await _unitOfWork.TurnoRepository.GetById(id);
+        //    if (turnoActual == null)
+        //    {
+        //        return Result<TurnoReadDTO>.Fail($"No existe registro con id {id}");
+        //    }
+        //    // VALIDACION DE LOS DATOS DEL TurnoDTO
+        //    var validarTurnoActualizar = await _validatorTurno.ValidateAsync(turnoActualizado);
+        //    if (!validarTurnoActualizar.IsValid)
+        //    {
+        //        var errors = string.Concat("; ", validarTurnoActualizar.Errors.Select(e => e));
+        //        return Result<TurnoReadDTO>.Fail(errors);
+        //    }
 
-           
+        //    //VER QUE SE ACTUALIZA DE TURNO PORQUE AHI TAMBIEN SE ENCUENTRAN LOS SERVICIOS [CORREGIR ]
+        //    var nuevoRegistrosDeTurno = new TurnoCreateUpdateDTO
+        //    {
+        //        Detalle = turnoActualizado.Detalle,
+        //        ClienteId = turnoActualizado.ClienteId,
+        //        EstadoTurnoId = turnoActualizado.EstadoTurnoId,
+        //        HoraTurno = turnoActualizado.HoraTurno,
+        //        FechaTurno = turnoActualizado.FechaTurno
+        //   //[COREGIR] NO CONTIENE LISTA DE SERVICIOS (EN ESTE CASO Turno.cs contiene una lista de turnoServicios.cs del cual debe acceder a cada uno por cada servicio agregado al turno)
+        //    };
 
-            var validarTurnoActualizar = await _validatorTurno.ValidateAsync(turnoActualizado);
-            if (!validarTurnoActualizar.IsValid)
-            {
-                var errors = string.Concat("; ", validarTurnoActualizar.Errors.Select(e => e));
-                return Result<TurnoReadDTO>.Fail(errors);
-            }
-
-            //VER QUE SE ACTUALIZA DE TURNO PORQUE AHI TAMBIEN SE ENCUENTRAN LOS SERVICIOS 
-            var nuevoRegistrosDeTurno = new TurnoCreateUpdateDTO
-            {
-                Detalle = turnoActualizado.Detalle,
-                ClienteId = turnoActualizado.ClienteId,
-                EstadoTurnoId = turnoActualizado.EstadoTurnoId,
-                HoraTurno = turnoActualizado.HoraTurno,
-                FechaTurno = turnoActualizado.FechaTurno
-            };
-
-
-            //Mapeo de turno
-            var turnoActualizadoEntity = _mapperTurno.ToEntity(nuevoRegistrosDeTurno);
-            //Actualizar Turno
-            await _unitOfWork.TurnoRepository.Update(id, turnoActualizadoEntity);
-            await _unitOfWork.SaveChangeAsync();
-
-            //Acciones:
-            //Agrega nuevo HistorialTurno de turno.
-            //Registro que se conserva para el nuevo registro: Turno.
-            //Registros Anteriores y Registros Actuales: EstadoTurno, FechaHora
-            //         
-            var fechaHoraActual = new DateTimeOffset(turnoActual.FechaTurno, turnoActual.HoraTurno, new TimeSpan(-3));
-            var fechaHoraActualizada = new DateTimeOffset(turnoActualizadoEntity.FechaTurno, turnoActualizadoEntity.HoraTurno, new TimeSpan(-3));
-            var estadoTurnoActual = turnoActual.EstadoTurnoId;
-            var estadoTurnoActualizado = turnoActualizadoEntity.EstadoTurnoId;
-
-            var historialTurno = new HistorialTurno
-            {
-                TurnoId = turnoActualizadoEntity.TurnoId,
-                FechaHoraAnterior = fechaHoraActual,
-                FechaHoraActual = fechaHoraActual,
-                EstadoTurnoAnterior = estadoTurnoActual,
-                EstadoTurnoActual = estadoTurnoActual
-            };
-
-            //Agregar nuevo registro de historial turno.
-            await _unitOfWork.HistorialTurnoRepository.Add(historialTurno);
-            await _unitOfWork.SaveChangeAsync();
+        //    //var serviciosDelTurno = turnoActualizado.Servicios <---ALGO ASI DEBE SER LA VARIABLE QUE ALMACENE LOS SERVICIOS DEL TURNO A ACTUALIZAR
 
 
+        //    //MAPEO DEL TURNO A ENTITY
+        //    var turnoActualizadoEntity = _mapperTurno.ToEntity(nuevoRegistrosDeTurno);
+        //    //ACTUALIZACION DEL TURNO
+        //    await _unitOfWork.TurnoRepository.Update(id, turnoActualizadoEntity);
+        //    await _unitOfWork.SaveChangeAsync();
 
-            //Actualizacion de Servicio o servicios | Agregar, Quitar, Cambiar(Quitar,Agregar)
-            //var turnoServicioId = await _unitOfWork.TurnoServicioRepository.GetById(turno.);
+        //    //Acciones:
+        //    //Agrega nuevo HistorialTurno de turno.
+        //    //Registro que se conserva para el nuevo registro: Turno.
+        //    //Registros Anteriores y Registros Actuales: EstadoTurno, FechaHora
+        //    //         
+        //    var fechaHoraActual = new DateTimeOffset(turnoActual.FechaTurno, turnoActual.HoraTurno, new TimeSpan(-3));
+        //    var fechaHoraActualizada = new DateTimeOffset(turnoActualizadoEntity.FechaTurno, turnoActualizadoEntity.HoraTurno, new TimeSpan(-3));
+        //    var estadoTurnoActual = turnoActual.EstadoTurnoId;
+        //    var estadoTurnoActualizado = turnoActualizadoEntity.EstadoTurnoId;
 
-            var serviciosActuales = turnoActual.TurnoServicios.Select(s => s.ServicioId);
-            var serviciosActualizado = turnoActualizado.Servicios.Select(s => s.ServicioId);
+        //    var historialTurno = new HistorialTurno
+        //    {
+        //        TurnoId = turnoActualizadoEntity.TurnoId,
+        //        FechaHoraAnterior = fechaHoraActual,
+        //        FechaHoraActual = fechaHoraActualizada,
+        //        EstadoTurnoAnterior = estadoTurnoActual,
+        //        EstadoTurnoActual = estadoTurnoActual
+        //    };
 
-            var serviciosAgregar = serviciosActualizado.Except(serviciosActuales).ToList();
-            var serviciosEliminar = serviciosActuales.Except(serviciosActualizado).ToList();//Si esto es asi entonces serviciosActualizados contiene los servicio
-                                                                                            //que ya existian o serviciosActuales
+        //    //Agregar nuevo registro de historial turno.
+        //    await _unitOfWork.HistorialTurnoRepository.Add(historialTurno);
+        //    await _unitOfWork.SaveChangeAsync();
 
-            //Recuperar los registros de TurnoServicio, relacionados al TURNO
-            // con el id correspondiente a los servicios que se quieren eliminar
-            //ACLARACION: llamada a la variable 'turnoActualizadoEntity' porque es el turno actual en cuestion que se quiere modificar.
-            //ACLARACION: 'ts' -> turnoServicio.
-            var eliminarRelaciones = turnoActualizadoEntity.TurnoServicios
-                .Where(ts => serviciosEliminar.Contains(ts.ServicioId))
-                .ToList();
+        //    //-------------------------TURNOSERVICIOS ACTUALIZACION--------------------?DONDE SE LLEVA A CABO LA RELACION DE LOS SERVICIOS EN ESTA CAPA DE TURNOUPDATE?
 
-            //Aquellos ServicioId's que coinciden con los nuevos servicios agregados.  
-            //ACLARACION: el origen de Datos es 'turnoActualizado' porque de ahi yacen los servicios actualizados del turno
-            var agregarRelaciones = turnoActualizado.Servicios
-                .Where(s => serviciosAgregar.Contains(s.ServicioId))
-                .ToList();
-                
+        //    //Actualizacion de Servicio o servicios | Agregar, Quitar, Cambiar(Quitar,Agregar)
+        //    //var turnoServicioId = await _unitOfWork.TurnoServicioRepository.GetById(turno.);
 
-            //Una vez con los registros que se quieren eliminar
-            foreach (var servicio in eliminarRelaciones)
-            {
-                await _unitOfWork.TurnoServicioRepository.Remove(servicio);
-            }
+        //    var serviciosActuales = turnoActual.TurnoServicios.Select(s => s.ServicioId);
+        //    var serviciosActualizado = turnoActualizado.Servicios.Select(s => s.ServicioId);
 
-            foreach (var servicio in agregarRelaciones)
-            {
+        //    var serviciosAgregar = serviciosActualizado.Except(serviciosActuales).ToList();
+        //    var serviciosEliminar = serviciosActuales.Except(serviciosActualizado).ToList();//Si esto es asi entonces serviciosActualizados contiene los servicio
+        //                                                                                    //que ya existian o serviciosActuales
 
-                //turnoUpdate.TurnoServicios.Add();
-                //Aca se puede simplificar y agregar estos objetos a la coleccion de 
-                //ServicioActualizadoEntity.
-                //await _unitOfWork.TurnoServicioRepository.Add(
-                 turnoActualizadoEntity.TurnoServicios.Add( 
-                    new TurnoServicio
-                    {
-                        TurnoId = turnoActualizadoEntity.TurnoId,
-                        ServicioId = servicio.ServicioId,
-                        MontoAplicado = servicio.Precio,
-                        TiempoAplicado = servicio.Duracion
-                    }
-                    );
-            }
+        //    //Recuperar los registros de TurnoServicio, relacionados al TURNO
+        //    // con el id correspondiente a los servicios que se quieren eliminar
+        //    //ACLARACION: llamada a la variable 'turnoActualizadoEntity' porque es el turno actual en cuestion que se quiere modificar.
+        //    //ACLARACION: 'ts' -> turnoServicio.
+        //    var eliminarRelaciones = turnoActualizadoEntity.TurnoServicios
+        //        .Where(ts => serviciosEliminar.Contains(ts.ServicioId))
+        //        .ToList();
 
-            await _unitOfWork.SaveChangeAsync();
+        //    //Aquellos ServicioId's que coinciden con los nuevos servicios agregados.  
+        //    //ACLARACION: el origen de Datos es 'turnoActualizado' porque de ahi yacen los servicios actualizados del turno
+        //    var agregarRelaciones = turnoActualizado.Servicios
+        //        .Where(s => serviciosAgregar.Contains(s.ServicioId))
+        //        .ToList();
 
-            await _unitOfWork.CommitAsync();
 
-            var turnoReadDTO = _mapperTurno.ToReadDTO(turnoActualizadoEntity);
-            return Result<TurnoReadDTO>.Succes(turnoReadDTO);
-        }
+        //    //Una vez con los registros que se quieren eliminar
+        //    foreach (var servicio in eliminarRelaciones)
+        //    {
+        //        await _unitOfWork.TurnoServicioRepository.Remove(servicio);
+        //    }
+
+        //    foreach (var servicio in agregarRelaciones)
+        //    {
+
+        //        //turnoUpdate.TurnoServicios.Add();
+        //        //Aca se puede simplificar y agregar estos objetos a la coleccion de 
+        //        //ServicioActualizadoEntity.
+        //        //await _unitOfWork.TurnoServicioRepository.Add(
+        //         turnoActualizadoEntity.TurnoServicios.Add( 
+        //            new TurnoServicio
+        //            {
+        //                TurnoId = turnoActualizadoEntity.TurnoId,
+        //                ServicioId = servicio.ServicioId,
+        //                MontoAplicado = servicio.Precio,
+        //                TiempoAplicado = servicio.Duracion
+        //            }
+        //            );
+        //    }
+
+        //    await _unitOfWork.SaveChangeAsync();
+
+        //    await _unitOfWork.CommitAsync();
+
+        //    var turnoReadDTO = _mapperTurno.ToReadDTO(turnoActualizadoEntity);
+        //    return Result<TurnoReadDTO>.Succes(turnoReadDTO);
+        //}
+
+
+
+
 
         //Porque se eliminaria un Turno? porque se cancelo? entonces, debe estar ese lugar libre para otros?
+        //Turno Se elimina cuando: 1) Cliente no asiste 2) Cliente cancela antes de tiempo 3)Que pasa luego de que el cliente complete su turno -> Se elimina tal registro o se conserva para archivar historial???
         public async Task<Result<string>> Delete(int id)
         {
             var eliminarTurno = await _unitOfWork.TurnoRepository.GetById(id);
@@ -315,7 +357,7 @@ namespace BLL.Services
 
         //Procedimientos
 
-  
+
 
 
     }

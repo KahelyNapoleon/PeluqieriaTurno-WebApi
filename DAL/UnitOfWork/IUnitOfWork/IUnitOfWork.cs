@@ -15,6 +15,8 @@ namespace DAL.UnitOfWork.IUnitOfWork
 
         ITurnoServicioRepository TurnoServicioRepository { get; }
 
+        IServicioRepository ServicioRepository { get; }
+
         Task BeginTransactionAsync();
         Task SaveChangeAsync();
         Task CommitAsync();

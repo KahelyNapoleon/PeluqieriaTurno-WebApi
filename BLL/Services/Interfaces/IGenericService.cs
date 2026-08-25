@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace BLL.Services.Interfaces
 {
-    public interface IGenericService<Entity, TReadDTO, TCreateUpdateDTO> where Entity : class
+    public interface IGenericService<Entity, TReadDTO, TCreateUpdateDTO> where Entity : class where TReadDTO : class where TCreateUpdateDTO : class
     {
         Task<Result<IEnumerable<TReadDTO?>>> GetAll();
         Task<Result<TReadDTO>> GetById(int id);

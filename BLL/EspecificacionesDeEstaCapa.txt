@@ -24,3 +24,8 @@ B-Ver en corregir el tipo de valor devuelto del metodo Add().
 
 2-Ver con especial atencion la continuacion del Servicio de turno donde se implementa el patron UoW(transaccio
 de datos de turnos->historialTurnos).
+
+
+
+[8/25/2026]
+1-En la parte de validacion de Turno (Metodo Add) se debe agregar una regla de validacion para los ids de servicios para que no haya ids repetidos y demas reglas 

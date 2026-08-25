@@ -19,6 +19,7 @@ namespace Contracts.DTOs.TurnoDTOs
 
         public DateOnly FechaTurno { get; set; }
 
-        public ICollection<ServicioReadDTO> Servicios { get; set; } = null!; //CAMPO PARA GENERAR LOS REGISTROS DE TURNOSERVICIO
+        public List<int> idsServicios { get; set; } = new List<int>();
+      
     }
 }

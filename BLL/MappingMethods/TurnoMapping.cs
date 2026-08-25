@@ -16,10 +16,8 @@ namespace BLL.MappingMethods
                 HoraTurno = t.HoraTurno,
                 ClienteId = t.ClienteId,
                 EstadoTurno = t.EstadoTurno.Descripcion
-
             };
         }
-
         public void UpdateEntity(TurnoCreateUpdateDTO dto, Turno t)
         {
             t.Detalle = dto.Detalle;
@@ -28,7 +26,6 @@ namespace BLL.MappingMethods
             t.ClienteId = dto.ClienteId;
             t.EstadoTurnoId = dto.EstadoTurnoId;
         }
-
         public Turno ToEntity(TurnoCreateUpdateDTO t)
         {
             return new Turno

@@ -20,10 +20,10 @@ namespace DAL.Repositorios
             _dbContext = dbContext;
         }
 
-        public async Task<IEnumerable<TurnoServicio>> GetAllServicios()
+        public async Task<IEnumerable<TurnoServicio>> GetAllTurnosServicios()
         {
             var servicios = _dbContext.TurnoServicios
-                .AsNoTracking();
+                .Include(ts => ts.Servicio);
             
             return await servicios.ToListAsync();
         

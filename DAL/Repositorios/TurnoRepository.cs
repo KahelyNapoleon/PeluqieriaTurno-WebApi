@@ -21,7 +21,7 @@ namespace DAL.Repositorios
 
         public async Task<IEnumerable<Turno?>> GetPaged(int pageNumber, int pageSize)
         {
-
+            //[CORREGIR] ERROR SI PageNumber es = 0 -> Controlar eso en la rapa de repositorio[ESTA CAPA], servicio o controlador
             var query = _dbContext.Turnos
                 .AsNoTracking()
                 .OrderBy(t => t.TurnoId)
@@ -46,18 +46,20 @@ namespace DAL.Repositorios
             var query = _dbContext.Turnos
                  .AsNoTracking()
                  .Include(t => t.Cliente)
-                 .Include(t => t.EstadoTurno);
+                 .Include(t => t.EstadoTurno)
+                 .Include(t => t.TurnoServicios);
 
             return await query.FirstOrDefaultAsync(t => t.TurnoId == id);
         }
 
-        public override async Task<IEnumerable<Turno?>> GetAll()
+        //Metodo Unico de este repositorio
+        public async Task<IEnumerable<Turno?>> GetAllTurnoWithServices()
         {
             var query = _dbContext.Turnos
-                .AsNoTracking()
-                .Include(t => t.EstadoTurno);
-
-            return await query.ToListAsync();
+                .Include(t => t.EstadoTurno)
+                .ToListAsync();
+                
+            return await query;
                 
         }
 

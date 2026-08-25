@@ -49,11 +49,6 @@ namespace BLL.Services
             // Agregamos la entidad al repositorio; se espera que el repositorio asigne el Id
             await _repository.Add(entity);
 
-            // Convertimos la entidad actualizada (con Id) al DTO de lectura y lo retornamos
-            //PROBLEMA entity ES EL TIPO DE VALOR DE ENTRADA SIN ID ASIGNADO POR ENDE AQUI EL 
-            //CODIGO TIENE UN ERROR
-            //CORREGIR CORREGIR
-
             var readDto = _mapper.ToReadDTO(entity);
 
             return Result<TReadDTO>.Succes(readDto);
