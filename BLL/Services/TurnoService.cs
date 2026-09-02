@@ -15,6 +15,7 @@ using Contracts.DTOs.HistorialTurnoDTOs;
 using BLL.Mapping;
 using Contracts.DTOs.TurnoServicioDTOs;
 using System.Reflection.PortableExecutable;
+using BLL.Services.EstadoTurnoEnum;
 
 namespace BLL.Services
 {
@@ -76,6 +77,7 @@ namespace BLL.Services
         }
 
         //OBTENER POR ID
+        //Si lo que se obtiene de GetById es un turno con servicios incluidos y estadoTurnos, entonces falta especificar esos objetos en la clase TurnoReadDTO
         public async Task<Result<TurnoReadDTO>> GetById(int id)
         {
             var turno = await _unitOfWork.TurnoRepository.GetById(id);
@@ -109,7 +111,7 @@ namespace BLL.Services
             }
 
             var servicios = new List<Servicio>();
-            foreach (var servicioId in turno.idsServicios)
+            foreach (var servicioId in turno.ServiciosId)
             {
                 var servicio = await _unitOfWork.ServicioRepository.GetById(servicioId);
                 if (servicio == null)
@@ -119,6 +121,7 @@ namespace BLL.Services
                 servicios.Add(servicio);
             }
 
+            var turnoToEntity = _mapperTurno.ToEntity(turno);
 
             await _unitOfWork.BeginTransactionAsync();
 
@@ -127,22 +130,22 @@ namespace BLL.Services
             { //------------------------------TURNO--------------------------------
                
 
-                var turnoToEntity = _mapperTurno.ToEntity(turno);
+                
                 await _unitOfWork.TurnoRepository.Add(turnoToEntity);
 
                 //---------------------------FIN-TURNO-------------------------------
 
                 //---------------------------HISTORIALTURNO-------------------------------
                 //Por ser la primera vez que se crea el turno, el estado anterior seria Turno DISPONIBLE            
-                int estadoTurnoDisponible = 0;
+                
                 //Inicia el historial
                 var inicioHistorialTurno = new HistorialTurnoCreateUpdateDTO
                 {
                     TurnoId = turnoToEntity.TurnoId,
                     FechaHoraAnterior = null,
                     FechaHoraActual = new DateTimeOffset(turnoToEntity.FechaTurno, turnoToEntity.HoraTurno, TimeSpan.FromHours(-3)),
-                    EstadoTurnoAnterior = estadoTurnoDisponible,
-                    EstadoTurnoActual = turnoToEntity.EstadoTurnoId,
+                    EstadoTurnoAnterior = (int)EstadoTurnoEnum.EstadoTurnoEnum.Disponible,
+                    EstadoTurnoActual = (int)EstadoTurnoEnum.EstadoTurnoEnum.Reservado,
                 };
 
                 var validarHistorialTurno = await _validatorHistorialTurno.ValidateAsync(inicioHistorialTurno);
@@ -168,7 +171,7 @@ namespace BLL.Services
                 {
                     var agregarTurnoServicioDTO = new TurnoServicioCreateUpdateDTO
                     {
-                        TurnoId = turnoToEntity.TurnoId,//Porque turnoToEntity?
+                        TurnoId = turnoToEntity.TurnoId,//Porque turnoToEntity? porque ya se agrego al esquema de datos 
                         ServicioId = servicio.ServicioId,
                         MontoAplicado = servicio.Precio,
                         TiempoAplicado = servicio.Duracion
@@ -203,10 +206,34 @@ namespace BLL.Services
 
 
 
-        //public async Task<Result<TurnoReadDTO>> UpdateSimpleDates(int id, DateTime nuevaFechaTurno, TimeOnly nuevaHoraTurno, string nuevoDetalle, int nuevoClienteId, int estadoTurnoId)
-        //{
+        public async Task<Result<TurnoReadDTO>> UpdateEstadoTurno(int TurnoId,int estadoTurnoId)
+        {
+            var turno = await _unitOfWork.TurnoRepository.GetById(TurnoId);
+            if (turno == null)
+            {
+                return Result<TurnoReadDTO>.Fail($"TurnoId {TurnoId} inexistente o incorrecto");
+            }
 
-        //}
+            await _unitOfWork.BeginTransactionAsync();
+
+            try
+            {
+                turno.EstadoTurnoId = estadoTurnoId;
+
+                await _unitOfWork.SaveChangeAsync();
+
+                var turnoToEntity = _mapperTurno.ToReadDTO(turno);
+
+                return Result<TurnoReadDTO>.Succes(turnoToEntity);
+
+            }catch(Exception ex)
+            {
+                await _unitOfWork.RollBackAsync();
+                return Result<TurnoReadDTO>.Fail("Error al intentar actualizar el estado del turno");
+            }
+
+            
+        }
 
 
         //sI LO QUE QUIERO CONSEGUIR ES CAMBIAR EL ESTADO DEL TURNO, EL NOMBRE Y LA IMPLEMENTACION DEL METODO

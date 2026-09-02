@@ -15,7 +15,10 @@ namespace BLL.MappingMethods
                 FechaTurno = t.FechaTurno,
                 HoraTurno = t.HoraTurno,
                 ClienteId = t.ClienteId,
-                EstadoTurno = t.EstadoTurno.Descripcion
+                EstadoTurnoDetalle = t.EstadoTurno.Descripcion,
+                ServiciosId = t.TurnoServicios.Select(ts => ts.ServicioId)
+                //Corregir aca ya que no hay coincidencia del tipo de datos. TurnoServicios es TurnoServicioReadDTO y t.TurnoServicios es de DomainModel
+
             };
         }
         public void UpdateEntity(TurnoCreateUpdateDTO dto, Turno t)

@@ -28,4 +28,4 @@ de datos de turnos->historialTurnos).
 
 
 [8/25/2026]
-1-En la parte de validacion de Turno (Metodo Add) se debe agregar una regla de validacion para los ids de servicios para que no haya ids repetidos y demas reglas 
+1-En la parte de validacion de Turno (Metodo Add) se debe agregar una regla de validacion en los ids de servicios, para que no haya ids repetidos 

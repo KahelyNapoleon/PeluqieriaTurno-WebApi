@@ -19,7 +19,7 @@ namespace Contracts.DTOs.TurnoDTOs
 
         public DateOnly FechaTurno { get; set; }
 
-        public List<int> idsServicios { get; set; } = new List<int>();
+        public List<int> ServiciosId { get; set; } = new List<int>();
       
     }
 }
