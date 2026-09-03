@@ -222,9 +222,9 @@ namespace BLL.Services
 
                 await _unitOfWork.SaveChangeAsync();
 
-                var turnoToEntity = _mapperTurno.ToReadDTO(turno);
+                var turnoToDTO = _mapperTurno.ToReadDTO(turno);
 
-                return Result<TurnoReadDTO>.Succes(turnoToEntity);
+                return Result<TurnoReadDTO>.Succes(turnoToDTO);
 
             }catch(Exception ex)
             {
@@ -235,6 +235,33 @@ namespace BLL.Services
             
         }
 
+        public async Task<Result<TurnoReadDTO>> UpdateFechaYHora(int TurnoId, DateOnly nuevaFecha, TimeOnly nuevaHora )
+        {
+            var turno = await _unitOfWork.TurnoRepository.GetById(TurnoId);
+
+            if (turno == null) return Result<TurnoReadDTO>.Fail("Turno inexistente o incorrecto.");
+
+            await _unitOfWork.BeginTransactionAsync();
+
+            try
+            {
+                turno.FechaTurno = nuevaFecha;
+                turno.HoraTurno = nuevaHora;
+
+                await _unitOfWork.SaveChangeAsync();
+
+                var turnoToDTO = _mapperTurno.ToReadDTO(turno);
+
+                return Result<TurnoReadDTO>.Succes(turnoToDTO);
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollBackAsync();
+                return Result<TurnoReadDTO>.Fail("Algo salio mal al intentar actualizar fecha y hora del turno.");
+            }
+
+
+        }
 
         //sI LO QUE QUIERO CONSEGUIR ES CAMBIAR EL ESTADO DEL TURNO, EL NOMBRE Y LA IMPLEMENTACION DEL METODO
         //DEBEN CAMBIAR Y SER DIFERENTE COMO UpdateEstadoTurno y recibir como parametro el estado del Turno actualizado.

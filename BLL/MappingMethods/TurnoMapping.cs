@@ -17,7 +17,7 @@ namespace BLL.MappingMethods
                 ClienteId = t.ClienteId,
                 EstadoTurnoDetalle = t.EstadoTurno.Descripcion,
                 ServiciosId = t.TurnoServicios.Select(ts => ts.ServicioId)
-                //Corregir aca ya que no hay coincidencia del tipo de datos. TurnoServicios es TurnoServicioReadDTO y t.TurnoServicios es de DomainModel
+                
 
             };
         }

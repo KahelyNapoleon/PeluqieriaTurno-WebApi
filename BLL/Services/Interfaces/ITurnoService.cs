@@ -16,6 +16,9 @@ namespace BLL.Services.Interfaces
 
         new Task<Result<TurnoReadDTO>> Add(TurnoCreateUpdateDTO turno);
 
-        new Task<Result<TurnoReadDTO>> UpdateEstadoTurno(int TurnoId,int EstadoTurnoId);
+        Task<Result<TurnoReadDTO>> UpdateEstadoTurno(int TurnoId,int EstadoTurnoId);
+
+        Task<Result<TurnoReadDTO>> UpdateFechaYHora(int TurnoId, DateOnly nuevaFecha, TimeOnly nuevaHora);
+
     }
 }
